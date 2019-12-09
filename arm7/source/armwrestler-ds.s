@@ -20,9 +20,10 @@
 
 main:
 
-mov	r0, #0x04000000			@ IME = 0;
-add	r0, r0, #0x208
-strh	r0, [r0]
+@ XXX - not sure what this does.  It's probably something DS-specific
+@ mov	r0, #0x04000000			@ IME = 0;
+@ add	r0, r0, #0x208
+@ strh	r0, [r0]
 
 
 ldr r0, =ExceptionHandler
@@ -168,24 +169,39 @@ forever:
 		b 	forever
 
 
-
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@
+@ XXX TODO - PORT THIS TO DREAMCAST
+@
+@ IDK how a vsync will work since we need the sh4
+@ to drive the video hardware for us.
+@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 VSync:
   stmfd sp!,{r0-r1}
-  mov 	r0,#0x4000000
-  add 	r0,r0,#4		@ DISPCNT+4 = DISPSTAT
-  vs_loop1:
-    	ldrh 	r1,[r0]
-    	ands 	r1,r1,#1
-  	bne 	vs_loop1
-  vs_loop2:
-    	ldrh 	r1,[r0]
-    	ands 	r1,r1,#1
-  	beq 	vs_loop2
+  @mov 	r0,#0x4000000
+  @add 	r0,r0,#4		@ DISPCNT+4 = DISPSTAT
+  @vs_loop1:
+  @  	ldrh 	r1,[r0]
+  @  	ands 	r1,r1,#1
+  @	bne 	vs_loop1
+  @vs_loop2:
+  @  	ldrh 	r1,[r0]
+  @  	ands 	r1,r1,#1
+  @	beq 	vs_loop2
   ldmfd sp!,{r0-r1}
   mov 	pc,lr
 
 
 
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@
+@ XXX TODO - PORT THIS TO DREAMCAST
+@
+@ Instead of drawing the text, it will need to transmit it
+@ to the SH4 so it can draw the text for us.
+@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 DrawText:
 @ r0: lpszText
 @ r1: x
@@ -193,47 +209,47 @@ DrawText:
 @ r3: color
 	stmfd 	sp!,{r4-r10}
 
-	ldr 	r10,=palette
-	mov 	r3,r3,lsl#1
-	ldrh 	r3,[r10,r3]
-	
-	mov 	r9,r2,lsl#9
-	add 	r9,r9,r1,lsl#1
-	add 	r9,r9,#0x2300000
-	
-dt_cloop:	
-	ldr 	r10,=font
-	ldrb 	r4,[r0],#1
-	cmp 	r4,#0
-	beq 	dt_null
-	cmp 	r4,#32
-	moveq 	r4,#0
-	subne 	r4,r4,#37
-	add 	r10,r10,r4,lsl#6
-	
-	mov 	r7,r9
-	add 	r9,r9,#16
-	mov 	r5,#8
-dt_vloop:
-	mov 	r6,#8
-dt_hloop:
-	ldrb 	r1,[r10],#1
-	@mov 	r2,r1,lsr#8
-	ands 	r1,r1,#0xFF 
-	movne 	r1,r3
-	@ands 	r2,r2,#0xFF
-	@movne 	r2,r3
-	@orr 	r1,r1,r2,lsl#8
-	strh 	r1,[r7],#2
-	subs 	r6,r6,#1
-	bne 	dt_hloop
-	
-	add 	r7,r7,#496
-	subs 	r5,r5,#1
-	bne 	dt_vloop
-	
-	b 	dt_cloop
-dt_null:
+@@ 	ldr 	r10,=palette
+@@ 	mov 	r3,r3,lsl#1
+@@ 	ldrh 	r3,[r10,r3]
+
+@@ 	mov 	r9,r2,lsl#9
+@@ 	add 	r9,r9,r1,lsl#1
+@@ 	add 	r9,r9,#0x2300000
+
+@@ dt_cloop:
+@@ 	ldr 	r10,=font
+@@ 	ldrb 	r4,[r0],#1
+@@ 	cmp 	r4,#0
+@@ 	beq 	dt_null
+@@ 	cmp 	r4,#32
+@@ 	moveq 	r4,#0
+@@ 	subne 	r4,r4,#37
+@@ 	add 	r10,r10,r4,lsl#6
+
+@@ 	mov 	r7,r9
+@@ 	add 	r9,r9,#16
+@@ 	mov 	r5,#8
+@@ dt_vloop:
+@@ 	mov 	r6,#8
+@@ dt_hloop:
+@@ 	ldrb 	r1,[r10],#1
+@@ 	@mov 	r2,r1,lsr#8
+@@ 	ands 	r1,r1,#0xFF
+@@ 	movne 	r1,r3
+@@ 	@ands 	r2,r2,#0xFF
+@@ 	@movne 	r2,r3
+@@ 	@orr 	r1,r1,r2,lsl#8
+@@ 	strh 	r1,[r7],#2
+@@ 	subs 	r6,r6,#1
+@@ 	bne 	dt_hloop
+
+@@ 	add 	r7,r7,#496
+@@ 	subs 	r5,r5,#1
+@@ 	bne 	dt_vloop
+
+@@ 	b 	dt_cloop
+@@ dt_null:
 	ldmfd 	sp!,{r4-r10}
 	mov 	pc,lr
 
@@ -241,6 +257,14 @@ dt_null:
 .align
 
 
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@
+@ XXX TODO - PORT THIS TO DREAMCAST
+@
+@ Instead of drawing the text, it will need to transmit it
+@ to the SH4 so it can draw the text for us.
+@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 DrawHex:
 @ r0: value
 @ r1: x
@@ -248,43 +272,43 @@ DrawHex:
 @ r3: color
 	stmfd 	sp!,{r4-r10}
 
-	ldr 	r10,=palette
-	mov 	r3,r3,lsl#1
-	ldrh 	r3,[r10,r3]
-	
-	mov 	r9,r2,lsl#9
-	add 	r9,r9,r1,lsl#1
-	add 	r9,r9,#0x2300000
-	mov 	r8,#8
-	
-dh_cloop:	
-	ldr 	r10,=font
-	mov 	r0,r0,ror#28
-	and 	r4,r0,#0xF
-	cmp	r4,#9
-	add 	r4,r4,#11
-	addhi	r4,r4,#7	
-	add 	r10,r10,r4,lsl#6
-	
-	mov 	r7,r9
-	add 	r9,r9,#16
-	mov 	r5,#8
-dh_vloop:
-	mov 	r6,#8
-dh_hloop:
-	ldrb 	r1,[r10],#1
-	ands 	r1,r1,#0xFF 
-	movne 	r1,r3
-	strh 	r1,[r7],#2
-	subs 	r6,r6,#1
-	bne 	dh_hloop
-	
-	add 	r7,r7,#496
-	subs 	r5,r5,#1
-	bne 	dh_vloop
-	
-	subs 	r8,r8,#1
-	bne 	dh_cloop
+@@ 	ldr 	r10,=palette
+@@ 	mov 	r3,r3,lsl#1
+@@ 	ldrh 	r3,[r10,r3]
+
+@@ 	mov 	r9,r2,lsl#9
+@@ 	add 	r9,r9,r1,lsl#1
+@@ 	add 	r9,r9,#0x2300000
+@@ 	mov 	r8,#8
+
+@@ dh_cloop:
+@@ 	ldr 	r10,=font
+@@ 	mov 	r0,r0,ror#28
+@@ 	and 	r4,r0,#0xF
+@@ 	cmp	r4,#9
+@@ 	add 	r4,r4,#11
+@@ 	addhi	r4,r4,#7
+@@ 	add 	r10,r10,r4,lsl#6
+
+@@ 	mov 	r7,r9
+@@ 	add 	r9,r9,#16
+@@ 	mov 	r5,#8
+@@ dh_vloop:
+@@ 	mov 	r6,#8
+@@ dh_hloop:
+@@ 	ldrb 	r1,[r10],#1
+@@ 	ands 	r1,r1,#0xFF
+@@ 	movne 	r1,r3
+@@ 	strh 	r1,[r7],#2
+@@ 	subs 	r6,r6,#1
+@@ 	bne 	dh_hloop
+
+@@ 	add 	r7,r7,#496
+@@ 	subs 	r5,r5,#1
+@@ 	bne 	dh_vloop
+
+@@ 	subs 	r8,r8,#1
+@@ 	bne 	dh_cloop
 	ldmfd 	sp!,{r4-r10}
 	mov 	pc,lr
 .pool
@@ -470,17 +494,27 @@ ClearScreen:
 	
 
 CheckKeys:
-	mov 	r0,#0x4000000
-	add 	r0,r0,#0x130
-	ldrh 	r2,[r0]
-	ldr 	r0,=(VARBASE+12)
-	ldrh 	r3,[r0]
-	and 	r2,r2,#0xff
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@
+@ XXX TODO - PORT THIS TO DREAMCAST
+@
+@ Instead of drawing the text, it will need to transmit it
+@ to the SH4 so it can draw the text for us.
+@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+	@@ mov 	r0,#0x4000000
+	@@ add 	r0,r0,#0x130
+	@@ ldrh 	r2,[r0]
+	@@ ldr 	r0,=(VARBASE+12)
+	@@ ldrh 	r3,[r0]
+	@@ and 	r2,r2,#0xff
 
-	eor 	r2,r2,#0xff
-	strh 	r2,[r0]
-	cmp 	r2,#0 
-	eorne 	r2,r2,r3
+	@@ eor 	r2,r2,#0xff
+	@@ strh 	r2,[r0]
+	@@ cmp 	r2,#0
+	@@ eorne 	r2,r2,r3
+
+	eor r2, r2, r2 @ XXX this was not in the original version
 	mov 	pc,lr
 .pool
 .align
@@ -707,6 +741,9 @@ labelone:
 	orrne 	r1,r1,#BAD_Rd
 	ldr 	r2,=labeltwo
 	mov 	r3,#0
+
+	@ XXX IDK if this is due to being on a different CPU or not,
+	@     but GNU AS says using R15 leads to unpredictable behavior
 	movs 	r4,r15,lsl r3	@ 0
 	orreq 	r1,r1,#8	@ 4
 	cmp 	r4,r2		@ 8
@@ -838,11 +875,20 @@ labelthree:
 	add 	r8,r8,#8
 
 	
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@
+@ XXX TODO - PORT THIS TO DREAMCAST
+@
+@ apparently we don't have the umulls instruction
+@ IDK if there's a reasonable replacement or if this test
+@ needs to be scrapped.
+@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	@ UMULL
 	mov 	r1,#0
 	ldr 	r2,=0x80000000
 	mov 	r3,#8
-	umulls 	r4,r5,r2,r3
+	@@ umulls 	r4,r5,r2,r3 @ XXX RIGHT HERE
 	orrmi 	r1,r1,#2
 	orreq 	r1,r1,#8
 	mov 	r2,#4
@@ -852,11 +898,20 @@ labelthree:
 	bl 	DrawResult
 	add 	r8,r8,#8
 
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@
+@ XXX TODO - PORT THIS TO DREAMCAST
+@
+@ apparently we don't have the smulls instruction
+@ IDK if there's a reasonable replacement or if this test
+@ needs to be scrapped.
+@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	@ SMULL
 	mov 	r1,#0
 	ldr 	r2,=0x80000000
 	mov 	r3,#8
-	smulls 	r4,r5,r2,r3
+	@@ smulls 	r4,r5,r2,r3 @ XXX RIGHT HERE
 	orrpl 	r1,r1,#2
 	orreq 	r1,r1,#8
 	ldr 	r2,=0xFFFFFFFC
@@ -882,12 +937,19 @@ Test1:
 	bl 	DrawText
 
 	
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@
+@ XXX TODO - PORT THIS TO DREAMCAST
+@
+@ apparently we don't have the umlals instruction
+@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	mov 	r1,#0
 	ldr 	r2,=0x80000000
 	mov 	r3,#8
 	mov 	r5,#1
 	mov 	r4,#2
-	umlals 	r4,r5,r2,r3
+	@@ umlals 	r4,r5,r2,r3 @ XXX RIGHT HERE
 	orrmi 	r1,r1,#2
 	orreq 	r1,r1,#8
 	cmp 	r4,#2
@@ -898,13 +960,20 @@ Test1:
 	bl 	DrawResult
 	add 	r8,r8,#8
 
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@
+@ XXX TODO - PORT THIS TO DREAMCAST
+@
+@ apparently we don't have the smlals instruction
+@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	@ SMLAL
 	mov 	r1,#0
 	ldr 	r2,=0x80000001
 	mov 	r3,#8
 	mov 	r5,#5
 	ldr 	r4,=0xfffffff8
-	smlals 	r4,r5,r2,r3
+	@@ smlals 	r4,r5,r2,r3 @ XXX RIGHT HERE
 	orrmi 	r1,r1,#2
 	orreq 	r1,r1,#8
 	cmp 	r5,#2
@@ -1542,6 +1611,15 @@ Test2:
 	
 	
 	
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@
+@ XXX TODO - PORT THIS TO DREAMCAST
+@
+@ apparently we don't have the ldrh instruction
+@ IDK if there's a reasonable replacement or if this test
+@ needs to be scrapped.
+@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	@ LDRH
 	
 	@ +#]
@@ -1550,11 +1628,11 @@ Test2:
 	sub 	r0,r0,#1
 	sub 	r2,r0,#3
 	mov 	r3,r2
-	ldrh 	r0,[r0,#1]
+	@@ ldrh 	r0,[r0,#1] @ XXX RIGHT HERE
 	ldr 	r5,=0x00008f00
 	cmp 	r0,r5
 	orrne 	r1,r1,#BAD_Rd
-	ldrh 	r0,[r2,#4]
+	@@ ldrh 	r0,[r2,#4] @ XXX RIGHT HERE
 	cmp 	r0,r5
 	orrne 	r1,r1,#BAD_Rd
 	cmp 	r2,r3
@@ -1571,11 +1649,11 @@ Test2:
 	add 	r0,r0,#1
 	add 	r2,r0,#3
 	mov 	r3,r2
-	ldrh 	r0,[r0,#-1]
+	@@ ldrh 	r0,[r0,#-1] @ XXX RIGHT HERE
 	ldr 	r5,=0x00008f00
 	cmp 	r0,r5
 	orrne 	r1,r1,#BAD_Rd
-	ldrh 	r0,[r2,#-4]
+	@@ ldrh 	r0,[r2,#-4] @ XXX RIGHT HERE
 	cmp 	r0,r5
 	orrne 	r1,r1,#BAD_Rd
 	cmp 	r2,r3
@@ -1592,11 +1670,11 @@ Test2:
 	mov 	r3,r0
 	sub 	r0,r0,#1
 	sub 	r2,r0,#3
-	ldrh 	r0,[r0,#1]!
+	@@ ldrh 	r0,[r0,#1]! @ XXX RIGHT HERE
 	ldr 	r5,=0x00008f00
 	cmp 	r0,r5
 	orrne 	r1,r1,#BAD_Rd
-	ldrh 	r0,[r2,#4]!
+	@@ ldrh 	r0,[r2,#4]! @ XXX RIGHT HERE
 	cmp 	r0,r5
 	orrne 	r1,r1,#BAD_Rd
 	cmp 	r2,r3
@@ -1613,11 +1691,11 @@ Test2:
 	mov 	r3,r0
 	add 	r0,r0,#1
 	add 	r2,r0,#3
-	ldrh 	r0,[r0,#-1]!
+	@@ ldrh 	r0,[r0,#-1]! @ XXX RIGHT HERE
 	ldr 	r5,=0x00008f00
 	cmp 	r0,r5
 	orrne 	r1,r1,#BAD_Rd
-	ldrh 	r0,[r2,#-4]!
+	@@ ldrh 	r0,[r2,#-4]! @ XXX RIGHT HERE
 	cmp 	r0,r5
 	orrne 	r1,r1,#BAD_Rd
 	cmp 	r2,r3
@@ -1645,6 +1723,15 @@ Test3:
 	bl 	DrawText
 
 
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@
+@ XXX TODO - PORT THIS TO DREAMCAST
+@
+@ apparently we don't have the ldrh instruction
+@ IDK if there's a reasonable replacement or if this test
+@ needs to be scrapped.
+@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	@ LDRH
 	
 	@ +#]
@@ -1654,12 +1741,12 @@ Test3:
 	sub 	r2,r0,#3
 	mov 	r3,r2
 	mov 	r4,#1
-	ldrh 	r0,[r0,r4]
+	@@ ldrh 	r0,[r0,r4] @ XXX RIGHT HERE
 	ldr 	r5,=0x00008f00
 	cmp 	r0,r5
 	orrne 	r1,r1,#BAD_Rd
 	mov 	r4,#4
-	ldrh 	r0,[r2,r4]
+	@@ ldrh 	r0,[r2,r4]
 	cmp 	r0,r5
 	orrne 	r1,r1,#BAD_Rd
 	cmp 	r2,r3
@@ -1677,12 +1764,12 @@ Test3:
 	add 	r2,r0,#3
 	mov 	r3,r2
 	mov 	r4,#1
-	ldrh 	r0,[r0,-r4]
+	@@ ldrh 	r0,[r0,-r4] @ XXX RIGHT HERE
 	ldr 	r5,=0x00008f00
 	cmp 	r0,r5
 	orrne 	r1,r1,#BAD_Rd
 	mov 	r4,#4
-	ldrh 	r0,[r2,-r4]
+	@@ ldrh 	r0,[r2,-r4] @ XXX RIGHT HERE
 	cmp 	r0,r5
 	orrne 	r1,r1,#BAD_Rd
 	cmp 	r2,r3
@@ -1775,6 +1862,15 @@ Test3:
 	add 	r8,r8,#8
 	
 
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@
+@ XXX TODO - PORT THIS TO DREAMCAST
+@
+@ apparently we don't have the ldrsb instruction
+@ IDK if there's a reasonable replacement or if this test
+@ needs to be scrapped.
+@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	@ LDRSB
 	
 	@ +#]
@@ -1782,11 +1878,11 @@ Test3:
 	ldr 	r0,=romvar3
 	sub 	r2,r0,#3
 	mov 	r3,r2
-	ldrsb 	r0,[r0,#0]
+	@@ ldrsb 	r0,[r0,#0] @ XXX RIGHT HERE
 	ldr 	r5,=0xffffff80
 	cmp 	r0,r5
 	orrne 	r1,r1,#BAD_Rd
-	ldrsb 	r0,[r2,#4]
+	@@ ldrsb 	r0,[r2,#4] @ XXX RIGHT HERE
 	cmp 	r0,#0x7f
 	orrne 	r1,r1,#BAD_Rd
 	cmp 	r2,r3
@@ -1804,11 +1900,11 @@ Test3:
 	add 	r2,r0,#3
 	add 	r0,r0,#1
 	mov 	r3,r2
-	ldrsb 	r0,[r0,#-1]
+	@@ ldrsb 	r0,[r0,#-1] @ XXX RIGHT HERE
 	ldr 	r5,=0xffffff80
 	cmp 	r0,r5
 	orrne 	r1,r1,#BAD_Rd
-	ldrsb 	r0,[r2,#-2]
+	@@ ldrsb 	r0,[r2,#-2] @ XXX RIGHT HERE
 	cmp 	r0,#0x7f
 	orrne 	r1,r1,#BAD_Rd
 	cmp 	r2,r3
@@ -1825,11 +1921,11 @@ Test3:
 	sub 	r2,r0,#3
 	mov 	r3,r2
 	mov 	r4,#4
-	ldrsb 	r0,[r0,r9]
+	@@ ldrsb 	r0,[r0,r9] @ XXX RIGHT HERE
 	ldr 	r5,=0xffffff80
 	cmp 	r0,r5
 	orrne 	r1,r1,#BAD_Rd
-	ldrsb 	r0,[r2,r4]
+	@@ ldrsb 	r0,[r2,r4] @ XXX RIGHT HERE
 	cmp 	r0,#0x7f
 	orrne 	r1,r1,#BAD_Rd
 	cmp 	r2,r3
@@ -1848,12 +1944,12 @@ Test3:
 	add 	r0,r0,#1
 	mov 	r3,r2
 	mov 	r4,#1
-	ldrsb 	r0,[r0,-r4]
+	@@ ldrsb 	r0,[r0,-r4] @ XXX RIGHT HERE
 	ldr 	r5,=0xffffff80
 	cmp 	r0,r5
 	orrne 	r1,r1,#BAD_Rd
 	add 	r4,r4,r4
-	ldrsb 	r0,[r2,-r4]
+	@@ ldrsb 	r0,[r2,-r4] @ XXX RIGHT HERE
 	cmp 	r0,#0x7f
 	orrne 	r1,r1,#BAD_Rd
 	cmp 	r2,r3
@@ -2362,6 +2458,15 @@ Test5:
 	bl DrawText
 	
 
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@
+@ XXX TODO - PORT THIS TO DREAMCAST
+@
+@ apparently we don't have the clz instruction
+@ IDK if there's a reasonable replacement or if this test
+@ needs to be scrapped.
+@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	@ CLZ
 	ldr r1, =exceptionFlag
 	mov r2, #0
@@ -2370,7 +2475,7 @@ Test5:
 	mov 	r2,#0x80000000
 	mov 	r3,#0x1F
 	mov 	r4,#0
-	clz 	r0,r2
+	@@ clz 	r0,r2 @ XXX RIGHT HERE
 	ldr r0, =exceptionFlag
 	ldr r0, [r0]
 	cmp 	r0,#0
@@ -2379,6 +2484,15 @@ Test5:
 	bl 	DrawResult
 	add 	r8,r8,#8
 
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@
+@ XXX TODO - PORT THIS TO DREAMCAST
+@
+@ apparently we don't have the ldrd instruction
+@ IDK if there's a reasonable replacement or if this test
+@ needs to be scrapped.
+@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	@ LDRD
 	mov 	r1,#0
 	ldr 	r0,=var64
@@ -2387,7 +2501,7 @@ Test5:
 	mov 	r3,#0
 	mov r4, #0
 	mov r5, #0
-	ldrd 	r2,[r0],#-1
+	@@ ldrd 	r2,[r0],#-1 @ RIGHT HERE
 	@ldr 	r4,=0x11223344
 	@ldr 	r5,=0x55667788
 	mov r4, #0
@@ -2429,6 +2543,15 @@ Test5:
 	add 	r8,r8,#8
 
 
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@
+@ XXX TODO - PORT THIS TO DREAMCAST
+@
+@ apparently we don't have the qadd instruction
+@ IDK if there's a reasonable replacement or if this test
+@ needs to be scrapped.
+@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	@ QADD
 	ldr r1, =exceptionFlag
 	mov r2, #0
@@ -2436,7 +2559,7 @@ Test5:
 	mov 	r1,#0
 	msr 	cpsr_f,#0
 	mov 	r2,#0x70000000
-	qadd 	r3,r2,r2
+	@@ qadd 	r3,r2,r2 @ RIGHT HERE
 	ldr r0, =exceptionFlag
 	ldr r0, [r0]
 	cmp 	r0,#0
@@ -2445,6 +2568,15 @@ Test5:
 	bl 	DrawResult
 	add 	r8,r8,#8
 
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@
+@ XXX TODO - PORT THIS TO DREAMCAST
+@
+@ apparently we don't have the smlabb instruction
+@ IDK if there's a reasonable replacement or if this test
+@ needs to be scrapped.
+@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	@ SMLABB
 	mov 	r1,#0
 	msr 	cpsr_f,#0
@@ -2452,7 +2584,7 @@ Test5:
 	mov 	r3,#0x7000
 	mov 	r4,#0x50000000
 	mov r5,#0
-	smlabb	r5,r2,r3,r4
+	@@ smlabb	r5,r2,r3,r4 @ XXX RIGHT HERE
 	cmp 	r5,#0
 	orrne 	r1,r1,#BAD_Rd
 	mrs 	r3,cpsr
@@ -2461,7 +2593,7 @@ Test5:
 	orreq 	r1,r1,#0x40
 	mov 	r3,#0x7000
 	mov 	r4,#0
-	smlabb 	r5,r2,r3,r4
+	@@ smlabb 	r5,r2,r3,r4 @ XXX RIGHT HERE
 	cmp 	r5,#0
 	orrne 	r1,r1,#BAD_Rd
 	mrs 	r3,cpsr
@@ -2473,6 +2605,15 @@ Test5:
 	add 	r8,r8,#8
 
 
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@
+@ XXX TODO - PORT THIS TO DREAMCAST
+@
+@ apparently we don't have the smlabt instruction
+@ IDK if there's a reasonable replacement or if this test
+@ needs to be scrapped.
+@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	@ SMLABT
 	mov 	r1,#0
 	msr 	cpsr_f,#0
@@ -2480,7 +2621,7 @@ Test5:
 	mov 	r3,#0x70000000
 	mov 	r4,#0x50000000
 	mov r5,#0
-	smlabt 	r5,r2,r3,r4
+	@@ smlabt 	r5,r2,r3,r4 @ XXX RIGHT HERE
 	cmp 	r5,#0
 	orrne 	r1,r1,#BAD_Rd
 	mrs 	r3,cpsr
@@ -2489,7 +2630,7 @@ Test5:
 	orreq 	r1,r1,#0x40
 	mov 	r3,#0x70000000
 	mov 	r4,#0
-	smlabt 	r5,r2,r3,r4
+	@@ smlabt 	r5,r2,r3,r4 @ XXX RIGHT HERE
 	cmp 	r5,#0
 	orrne 	r1,r1,#BAD_Rd
 	mrs 	r3,cpsr
@@ -2500,6 +2641,15 @@ Test5:
 	bl 	DrawResult
 	add 	r8,r8,#8
 
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@
+@ XXX TODO - PORT THIS TO DREAMCAST
+@
+@ apparently we don't have the smlatb instruction
+@ IDK if there's a reasonable replacement or if this test
+@ needs to be scrapped.
+@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	@ SMLATB
 	mov 	r1,#0
 	msr 	cpsr_f,#0
@@ -2507,7 +2657,7 @@ Test5:
 	mov 	r3,#0x70000000
 	mov 	r4,#0x50000000
 	mov r5,#0
-	smlatb 	r5,r3,r2,r4
+	@@ smlatb 	r5,r3,r2,r4 @ XXX RIGHT HERE
 	cmp 	r5,#0
 	orrne 	r1,r1,#BAD_Rd
 	mrs 	r3,cpsr
@@ -2516,7 +2666,7 @@ Test5:
 	orreq 	r1,r1,#0x40
 	mov 	r3,#0x70000000
 	mov 	r4,#0
-	smlatb 	r5,r3,r2,r4
+	@@ smlatb 	r5,r3,r2,r4 @ XXX RIGHT HERE
 	cmp 	r5,#0
 	orrne 	r1,r1,#BAD_Rd
 	mrs 	r3,cpsr
@@ -2527,6 +2677,15 @@ Test5:
 	bl 	DrawResult
 	add 	r8,r8,#8
 
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@
+@ XXX TODO - PORT THIS TO DREAMCAST
+@
+@ apparently we don't have the smlatt instruction
+@ IDK if there's a reasonable replacement or if this test
+@ needs to be scrapped.
+@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	@ SMLATT
 	mov 	r1,#0
 	msr 	cpsr_f,#0
@@ -2534,7 +2693,7 @@ Test5:
 	mov 	r3,#0x70000000
 	mov 	r4,#0x50000000
 	mov r5, #0
-	smlatt 	r5,r2,r3,r4
+	@@ smlatt 	r5,r2,r3,r4 @ XXX RIGHT HERE
 	cmp 	r5,#0
 	orrne 	r1,r1,#BAD_Rd
 	mrs 	r3,cpsr
@@ -2543,7 +2702,7 @@ Test5:
 	orreq 	r1,r1,#0x40
 	mov 	r3,#0x70000000
 	mov 	r4,#0
-	smlatt 	r5,r2,r3,r4
+	@@ smlatt 	r5,r2,r3,r4 @ XXX RIGHT HERE
 	cmp 	r5,#0
 	orrne 	r1,r1,#BAD_Rd
 	mrs 	r3,cpsr
@@ -2565,6 +2724,19 @@ Test7:
 Test8:
 Test9:
 
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@
+@ XXX TODO - PORT THIS TO DREAMCAST
+@
+@ apparently we don't have the bx instruction
+@ IDK if there's a reasonable replacement or if this test
+@ needs to be scrapped.
+@
+@ Actually, on second thought it looks like this has something to do
+@ with  thumb mode, in which case we definitely don't have a reasonable
+@ replacement and this test does need to be scrapped.
+@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 TestTmb:
 	mov r8,#0
 	mov r9,#3
@@ -2579,14 +2751,23 @@ TestTmb:
 	sub r5,r5,#11
 	str r5,[r4]
 	
-	ldr r0,=_tmbmain
+	@@ ldr r0,=_tmbmain @ XXX RIGHT HERE
 	add r0,r0,#1
-	bx r0
+	@@ bx r0 @ XXX RIGHT HERE
 
 .pool
 .align
 
 
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@
+@ XXX TODO - PORT THIS TO DREAMCAST
+@
+@ apparently we don't have the bx instruction
+@ IDK if there's a reasonable replacement or if this test
+@ needs to be scrapped.
+@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 ExceptionHandler:
 	@ SP=0x380FFD1
 	ldr r12, [sp, #7]
@@ -2594,7 +2775,7 @@ ExceptionHandler:
 	str r12, [sp, #7]
 	ldr r12, =exceptionFlag
 	str r12, [r12]
-	bx lr
+	@@ bx lr @ XXX RIGHT HERE
 	
 .pool
 .align
@@ -2635,8 +2816,8 @@ jumptable: 	.word Test0,Test1,Test2,Test3
 	   	.word Test4,Test5,Test6,Test7
 	   	.word Test8,Test9,Menu,TestTmb,TestTmb,TestTmb
 	   	
-.global font
-font:		.incbin "../data/font8x8.pat"
+@@ .global font
+@@ font:		.incbin "../data/font8x8.pat"
 
 szADC:		.asciz "ADC"
 szADD:		.asciz "ADD"
