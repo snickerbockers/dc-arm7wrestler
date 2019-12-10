@@ -4,8 +4,8 @@
 @ Runs ARM instructions and checks for valid results. Useful for people developing ARM emulators
 @ Assemble with arm-elf-as
 
-.global main
-.global forever
+.global _start
+@@ .global forever
 
 .equ VARBASE,	0x2200000
 .equ TESTNUM,	(VARBASE+8)
@@ -18,7 +18,33 @@
 
 .global main
 
-main:
+.align 4
+_start:
+	b reset
+	b undefined
+	b swi
+	b pref_abort
+	b data_abort
+	b wtf_is_this
+	b irq
+	b fiq
+
+undefined:
+	movs pc, r14
+swi:
+	movs pc, r14
+pref_abort:
+	subs pc, r14, #4
+data_abort:
+	subs pc, r14, #8
+wtf_is_this:
+	subs pc, r14, #4
+irq:
+	subs pc, r14, #4
+fiq:
+	subs pc, r14, #4
+
+reset:	
 
 @ XXX - not sure what this does.  It's probably something DS-specific
 @ mov	r0, #0x04000000			@ IME = 0;

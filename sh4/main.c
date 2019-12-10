@@ -176,9 +176,7 @@ static void enable_arm(void) {
     ARM7_RESET &= ~1;
 }
 
-#ifdef TODO
 #include "arm_prog.h"
-#endif
 
 #define MSG_SEQNO       (*(unsigned volatile*)0xa0900000)
 #define MSG_SEQNO_ACK   (*(unsigned volatile*)0xa0900004)
@@ -220,7 +218,6 @@ static void init_arm_cpu(void) {
     arm7_operational = 0;
     last_seqno = 0;
 
-#ifdef TODO
     unsigned volatile *outp = (unsigned volatile*)0xa0800000;
     unsigned const *inp = (unsigned const*)arm7_program;
 
@@ -229,7 +226,6 @@ static void init_arm_cpu(void) {
         *outp++ = *inp++;
 
     enable_arm();
-#endif
 }
 
 // returns 1 if there's a message, else 0
