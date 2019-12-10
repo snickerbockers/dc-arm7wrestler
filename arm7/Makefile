@@ -4,6 +4,9 @@ ARM_OBJCOPY=arm-linux-gnueabi-objcopy
 
 all: armwrestler-ds.bin
 
+clean:
+	rm -rf armwrestler-ds.o armwrestler-ds.elf armwrestler-ds.bin
+
 armwrestler-ds.o: source/armwrestler-ds.s
 	$(ARM_AS) -EL -mcpu=arm7 -o armwrestler-ds.o source/armwrestler-ds.s
 
