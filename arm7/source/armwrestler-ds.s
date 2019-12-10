@@ -7,7 +7,7 @@
 .global _start
 @@ .global forever
 
-.equ VARBASE,	0x2200000
+.equ VARBASE,	0x100000 @@ 0x2200000
 .equ TESTNUM,	(VARBASE+8)
 .equ CURSEL,	(VARBASE+16)
 
