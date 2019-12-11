@@ -11,9 +11,17 @@ msg_init:
 	mov pc, lr
 
 xmit_fib_msg:
+	@@ save the link register
+	sub sp, sp, #4
+	str lr, [sp]
+
 	ldr r0, fib_msg_addr
 	mov r1, #69
 	bl xmit_pkt
+
+	@@ restore the link register
+	ldr lr, [sp]
+	add sp, sp, #4
 
 	ldr r0, ack_seqno
 	ldr r1, pkt_out_addr
