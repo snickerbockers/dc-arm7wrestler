@@ -10,8 +10,11 @@ clean:
 armwrestler-ds.o: source/armwrestler-ds.s
 	$(ARM_AS) -EL -mcpu=arm7 -o armwrestler-ds.o source/armwrestler-ds.s
 
-armwrestler-ds.elf: armwrestler-ds.o
-	$(ARM_LD) -Ttext 0x00000000 armwrestler-ds.o -o armwrestler-ds.elf
+message.o: source/message.s
+	$(ARM_AS) -EL -mcpu=arm7 -o message.o source/message.s
+
+armwrestler-ds.elf: armwrestler-ds.o message.o
+	$(ARM_LD) -Ttext 0x00000000 armwrestler-ds.o message.o -o armwrestler-ds.elf
 
 armwrestler-ds.bin: armwrestler-ds.elf
 	$(ARM_OBJCOPY) -O binary -j .text -j .data -j .bss -j .rodata --set-section-flags .data=alloc,load,contents armwrestler-ds.elf armwrestler-ds.bin

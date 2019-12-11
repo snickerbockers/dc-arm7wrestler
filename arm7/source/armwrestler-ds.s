@@ -51,11 +51,20 @@ reset:
 @ add	r0, r0, #0x208
 @ strh	r0, [r0]
 
+@@ XXX - initialize the stack pointer
+ldr sp, =stack_top
+add sp, sp, #-4 @@ <= this is probably unnecessary tbh
 
-ldr r0, =ExceptionHandler
-ldr r1, =0x380FFDC
-str r0, [r1]
+@@ XXX - initialize the message passing system
+bl msg_init
 
+@@ XXX - send a simple message to the sh4 to let it know we're alive
+bl xmit_fib_msg
+
+@@ XXX - figure out what this point of this is
+@@ ldr r0, =ExceptionHandler
+@@ ldr r1, =0x380FFDC
+@@ str r0, [r1]
 
 mov 	r0,#0		
 ldr 	r1,=(VARBASE+0x10)
@@ -3000,6 +3009,11 @@ szSpace:	.asciz " "
 szRomMsg:	.asciz "Message from ROM"
 
 szHexNum:	.asciz "00000000"
+@stack_top_val:	 .long stack_top
+.align 8
+stack_bottom:
+	.space 4096
+stack_top:
 
 .align
 .pool
