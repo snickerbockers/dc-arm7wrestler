@@ -66,6 +66,15 @@ msg_loaded:
 	mov r1, #70
 	bl xmit_pkt
 
+	@@ now wait for the response
+	ldr r0, ack_seqno
+	ldr r1, pkt_out_addr
+	add r1, r1, #4
+xmit_string_wait_for_ack:
+	ldr r2, [r1]
+	cmp r2, r0
+	bne xmit_string_wait_for_ack
+
 	ldr lr, [sp]
 	add sp, sp, #4
 
