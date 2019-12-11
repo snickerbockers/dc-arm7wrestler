@@ -284,11 +284,21 @@ static void wait_vblank(void) {
  * entry instead of _start, and this was the only thing I tried that actually
  * fixed it.
  */
+
+#define N_CHAR_ROWS MAX_CHARS_Y
+#define N_CHAR_COLS MAX_CHARS_X
+
 int dcmain(int argc, char **argv) {
 
     struct msg msg;
     char arm_msg[52];
     arm_msg[0] = 0;
+
+    char txt_buf[N_CHAR_ROWS][N_CHAR_COLS];
+    int row, col;
+    for (row = 0; row < N_CHAR_ROWS; row++)
+        for (col = 0; col < N_CHAR_COLS; col++)
+            txt_buf[row][col] = '\0';
 
     create_font(normal_font, make_color(255, 255, 255), make_color(0, 0, 0));
     create_font(success_font, make_color(0, 255, 0), make_color(0, 0, 0));
@@ -301,31 +311,40 @@ int dcmain(int argc, char **argv) {
     for (;;) {
         clear_screen(get_backbuffer(), make_color(0, 0, 0));
 
-        drawstring(get_backbuffer(), normal_font, "DREAMCAST ARM7WRESTLER SH4 INITIALIZATION", 1, 0);
-
-        if (arm7_operational)
-            drawstring(get_backbuffer(), success_font, "The ARM7 is alive and functional", 2, 0);
-        else
-            drawstring(get_backbuffer(), fail_font, "The ARM7 is not operating correctly", 2, 0);
-
-        if (arm_msg[0])
-            drawstring(get_backbuffer(), normal_font, arm_msg, 3, 0);
-        else
-            drawstring(get_backbuffer(), fail_font, "NO MESSAGE RECEIVED FROM ARM", 3, 0);
+        void volatile *fb = get_backbuffer();
+        int row, col;
+        for (row = 0; row < N_CHAR_ROWS; row++)
+            for (col = 0; col < N_CHAR_COLS; col++)
+                if (txt_buf[row][col] && txt_buf[row][col] != ' ')
+                    draw_char(fb, normal_font, txt_buf[row][col], row, col);
 
         wait_vblank();
         swap_buffers();
 
-        int idx;
+        int idx, x_pos, y_pos;
+        char const *inp;
         if (check_msg(&msg)) {
             switch (msg.opcode) {
             case ARM7_OPCODE_FIBONACCI:
                 arm7_operational = validate_fibonacci(msg.msg);
                 break;
             case ARM7_OPCODE_PRINT:
-                for (idx = 0; idx < 51; idx++)
-                    arm_msg[idx] = msg.msg[idx];
+                x_pos = ((int*)msg.msg)[0];
+                y_pos = ((int*)msg.msg)[1];
+                for (idx = 12; idx < 51; idx++)
+                    arm_msg[idx - 12] = msg.msg[idx];
                 arm_msg[51] = '\0';
+
+                x_pos /= 8;
+                y_pos /= 8;
+
+                if (y_pos >= N_CHAR_ROWS)
+                    break;
+
+                inp = arm_msg;
+                while (*inp && x_pos < N_CHAR_COLS) {
+                    txt_buf[y_pos][x_pos++] = *inp++;
+                }
                 break;
             }
         }

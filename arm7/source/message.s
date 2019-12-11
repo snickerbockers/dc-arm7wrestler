@@ -34,29 +34,44 @@ wait_for_ack:
 
 	mov pc, lr
 
+	@@ Transmit a text string to the SH4
+	@@ parameters:
+	@@     r0 - string
+	@@     r1 - x position
+	@@     r2 - y position
+	@@     r3 - color index
 xmit_string:
-	sub sp, sp, #4
-	str lr, [sp]
+	stmfd 	sp!,{r4-r10,lr}
 
-	ldr r3, =xmit_string_buf
-	add r2, r3, #52
-	mov r1, #0
+	ldr r7, =xmit_string_buf
+
+	mov r6, r7
+	add r5, r6, #52
+	mov r4, #0
 
 clear_msg:
-	str r1, [r3]
-	add r3, r3, #4
-	cmp r3, r2
+	str r4, [r6]
+	add r6, r6, #4
+	cmp r6, r5
 	bne clear_msg
 
-	ldr r3, =xmit_string_buf
+	@@ write out x-pos, y-pos, color (12 bytes)
+	str r1, [r7]
+	add r7, r7, #4
+	str r2, [r7]
+	add r7, r7, #4
+	str r3, [r7]
+	add r7, r7, #4
+
+	mov r6, r7
 load_msg:
-	ldrb r1, [r0]
-	strb r1, [r3]
-	add r3, r3, #1
+	ldrb r4, [r0]
+	strb r4, [r6]
+	add r6, r6, #1
 	add r0, r0, #1
-	cmp r3, r2
+	cmp r6, r5
 	beq msg_loaded
-	cmp r1, #0
+	cmp r4, #0
 	beq msg_loaded
 	b load_msg
 
@@ -75,9 +90,7 @@ xmit_string_wait_for_ack:
 	cmp r2, r0
 	bne xmit_string_wait_for_ack
 
-	ldr lr, [sp]
-	add sp, sp, #4
-
+	ldmfd 	sp!,{r4-r10,lr}
 	mov pc, lr
 
 xmit_string_buf:
