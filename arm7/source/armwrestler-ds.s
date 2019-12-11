@@ -244,6 +244,14 @@ DrawText:
 @ r3: color
 	stmfd 	sp!,{r4-r10}
 
+	sub sp, sp, #4
+	str lr, [sp]
+
+	bl xmit_string
+
+	ldr lr, [sp]
+	add sp, sp, #4
+
 @@ 	ldr 	r10,=palette
 @@ 	mov 	r3,r3,lsl#1
 @@ 	ldrh 	r3,[r10,r3]

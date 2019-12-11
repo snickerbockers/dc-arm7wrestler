@@ -1,5 +1,6 @@
 	.global msg_init
 	.global xmit_fib_msg
+	.global xmit_string
 
 	.align 4
 msg_init:
@@ -33,6 +34,47 @@ wait_for_ack:
 
 	mov pc, lr
 
+xmit_string:
+	sub sp, sp, #4
+	str lr, [sp]
+
+	ldr r3, =xmit_string_buf
+	add r2, r3, #52
+	mov r1, #0
+
+clear_msg:
+	str r1, [r3]
+	add r3, r3, #4
+	cmp r3, r2
+	bne clear_msg
+
+	ldr r3, =xmit_string_buf
+load_msg:
+	ldrb r1, [r0]
+	strb r1, [r3]
+	add r3, r3, #1
+	add r0, r0, #1
+	cmp r3, r2
+	beq msg_loaded
+	cmp r1, #0
+	beq msg_loaded
+	b load_msg
+
+msg_loaded:
+
+	ldr r0, =xmit_string_buf
+	mov r1, #70
+	bl xmit_pkt
+
+	ldr lr, [sp]
+	add sp, sp, #4
+
+	mov pc, lr
+
+xmit_string_buf:
+	.zero 52
+
+	.align 4
 init_fib_msg:
 	@@ fills fib_msg with a fibonacci sequence
 	@@ we send this to the sh4 to prove to it that
