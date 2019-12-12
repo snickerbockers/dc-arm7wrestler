@@ -80,10 +80,6 @@ static unsigned short make_color(unsigned red, unsigned green, unsigned blue) {
     return blue | (green << 5) | (red << 11);
 }
 
-static unsigned short normal_font[288 * 24 * 12];
-static unsigned short success_font[288 * 24 * 12];
-static unsigned short fail_font[288 * 24 * 12];
-
 static void
 create_font(unsigned short *font,
             unsigned short foreground, unsigned short background) {
@@ -289,20 +285,33 @@ static void wait_vblank(void) {
 #define N_CHAR_COLS MAX_CHARS_X
 
 int dcmain(int argc, char **argv) {
-
+    /*
+     * The reason why these big arrays are static is to save on stack space.
+     * We only have 4KB!
+     */
     struct msg msg;
-    char arm_msg[52];
+    static char arm_msg[52];
     arm_msg[0] = 0;
 
-    char txt_buf[N_CHAR_ROWS][N_CHAR_COLS];
+    static char txt_buf[N_CHAR_ROWS][N_CHAR_COLS];
+    static int txt_colors[N_CHAR_ROWS][N_CHAR_COLS];
+
+#define N_FONTS 6
+    static unsigned short fonts[N_FONTS][288 * 24 * 12];
+
     int row, col;
     for (row = 0; row < N_CHAR_ROWS; row++)
-        for (col = 0; col < N_CHAR_COLS; col++)
+        for (col = 0; col < N_CHAR_COLS; col++) {
             txt_buf[row][col] = '\0';
+            txt_colors[row][col] = 0;
+        }
 
-    create_font(normal_font, make_color(255, 255, 255), make_color(0, 0, 0));
-    create_font(success_font, make_color(0, 255, 0), make_color(0, 0, 0));
-    create_font(fail_font, make_color(255, 0, 0), make_color(0, 0, 0));
+    create_font(fonts[0], make_color(0, 0, 0), make_color(0, 0, 0));
+    create_font(fonts[1], make_color(0, 197, 0), make_color(0, 0, 0));
+    create_font(fonts[2], make_color(0, 0, 197), make_color(0, 0, 0));
+    create_font(fonts[3], make_color(255, 255, 255), make_color(0, 0, 0));
+    create_font(fonts[4], make_color(230, 197, 197), make_color(0, 0, 0));
+    create_font(fonts[5], make_color(24, 131, 255), make_color(0, 0, 0));
 
     init_arm_cpu();
 
@@ -315,13 +324,17 @@ int dcmain(int argc, char **argv) {
         int row, col;
         for (row = 0; row < N_CHAR_ROWS; row++)
             for (col = 0; col < N_CHAR_COLS; col++)
-                if (txt_buf[row][col] && txt_buf[row][col] != ' ')
-                    draw_char(fb, normal_font, txt_buf[row][col], row, col);
+                if (txt_buf[row][col] && txt_buf[row][col] != ' ') {
+                    int col_idx = txt_colors[row][col];
+                    if (col_idx >= N_FONTS)
+                        col_idx = N_FONTS - 1;
+                    draw_char(fb, fonts[col_idx], txt_buf[row][col], row, col);
+                }
 
         wait_vblank();
         swap_buffers();
 
-        int idx, x_pos, y_pos;
+        int idx, x_pos, y_pos, color;
         char const *inp;
         if (check_msg(&msg)) {
             switch (msg.opcode) {
@@ -331,6 +344,7 @@ int dcmain(int argc, char **argv) {
             case ARM7_OPCODE_PRINT:
                 x_pos = ((int*)msg.msg)[0];
                 y_pos = ((int*)msg.msg)[1];
+                color = ((int*)msg.msg)[2];
                 for (idx = 12; idx < 51; idx++)
                     arm_msg[idx - 12] = msg.msg[idx];
                 arm_msg[51] = '\0';
@@ -343,6 +357,7 @@ int dcmain(int argc, char **argv) {
 
                 inp = arm_msg;
                 while (*inp && x_pos < N_CHAR_COLS) {
+                    txt_colors[y_pos][x_pos] = color;
                     txt_buf[y_pos][x_pos++] = *inp++;
                 }
                 break;
