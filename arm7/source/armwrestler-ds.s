@@ -231,10 +231,7 @@ VSync:
 
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 @
-@ XXX TODO - PORT THIS TO DREAMCAST
-@
-@ Instead of drawing the text, it will need to transmit it
-@ to the SH4 so it can draw the text for us.
+@ XXX Draws text by trnsmitting it to the SH4
 @
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 DrawText:
@@ -252,47 +249,6 @@ DrawText:
 	ldr lr, [sp]
 	add sp, sp, #4
 
-@@ 	ldr 	r10,=palette
-@@ 	mov 	r3,r3,lsl#1
-@@ 	ldrh 	r3,[r10,r3]
-
-@@ 	mov 	r9,r2,lsl#9
-@@ 	add 	r9,r9,r1,lsl#1
-@@ 	add 	r9,r9,#0x2300000
-
-@@ dt_cloop:
-@@ 	ldr 	r10,=font
-@@ 	ldrb 	r4,[r0],#1
-@@ 	cmp 	r4,#0
-@@ 	beq 	dt_null
-@@ 	cmp 	r4,#32
-@@ 	moveq 	r4,#0
-@@ 	subne 	r4,r4,#37
-@@ 	add 	r10,r10,r4,lsl#6
-
-@@ 	mov 	r7,r9
-@@ 	add 	r9,r9,#16
-@@ 	mov 	r5,#8
-@@ dt_vloop:
-@@ 	mov 	r6,#8
-@@ dt_hloop:
-@@ 	ldrb 	r1,[r10],#1
-@@ 	@mov 	r2,r1,lsr#8
-@@ 	ands 	r1,r1,#0xFF
-@@ 	movne 	r1,r3
-@@ 	@ands 	r2,r2,#0xFF
-@@ 	@movne 	r2,r3
-@@ 	@orr 	r1,r1,r2,lsl#8
-@@ 	strh 	r1,[r7],#2
-@@ 	subs 	r6,r6,#1
-@@ 	bne 	dt_hloop
-
-@@ 	add 	r7,r7,#496
-@@ 	subs 	r5,r5,#1
-@@ 	bne 	dt_vloop
-
-@@ 	b 	dt_cloop
-@@ dt_null:
 	ldmfd 	sp!,{r4-r10}
 	mov 	pc,lr
 
@@ -2973,10 +2929,10 @@ szQ:		.asciz "Q"
 szSel:		.asciz "`"
 szMem:		.asciz "MEM"
 
-szAsterixes:	.asciz "jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj"
-szAster2:	.asciz "j                              j"
-szArmwrestler:	.asciz "j        ARM7WRESTLER DS       j"
-szAuthor:	.asciz "j          Micg 2006           j"
+szAsterixes:	.asciz "********************************"
+szAster2:	.asciz "*                              *"
+szArmwrestler:	.asciz "*        ARM7WRESTLER DS       *"
+szAuthor:	.asciz "*          Micg 2006           *"
 
 szArm1:		.asciz "ARM ALU"
 szArm2:		.asciz "ARM LDR/STR"
