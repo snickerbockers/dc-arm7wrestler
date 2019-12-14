@@ -279,10 +279,11 @@ static void volatile *get_backbuffer(void) {
         return FRAMEBUFFER_1;
 }
 
-static void wait_vblank(void) {
-    while (!(REG_ISTNRM & (1 << 3)))
-        ;
-    REG_ISTNRM = (1 << 3);
+static int check_vblank(void) {
+    int ret = (REG_ISTNRM & (1 << 3)) ? 1 : 0;
+    if (ret)
+        REG_ISTNRM = (1 << 3);
+    return ret;
 }
 
 #define REG_MDSTAR (*(unsigned volatile*)0xa05f6c04)
@@ -475,60 +476,61 @@ int dcmain(int argc, char **argv) {
                     draw_char(fb, fonts[col_idx], txt_buf[row][col], row, col);
                 }
 
-        wait_vblank();
-        swap_buffers();
         unsigned btns = ~get_controller_buttons();
 
-        int idx, x_pos, y_pos, color;
-        char const *inp;
-        unsigned ret_val = 0;
-        if (check_msg(&msg)) {
-            switch (msg.opcode) {
-            case ARM7_OPCODE_FIBONACCI:
-                arm7_operational = validate_fibonacci(msg.msg);
-                return_msg(0);
-                break;
-            case ARM7_OPCODE_PRINT:
-                x_pos = ((int*)msg.msg)[0];
-                y_pos = ((int*)msg.msg)[1];
-                color = ((int*)msg.msg)[2];
-                for (idx = 12; idx < (DATA_LEN - 1); idx++)
-                    arm_msg[idx - 12] = msg.msg[idx];
-                arm_msg[(DATA_LEN - 1)] = '\0';
-
-                x_pos /= 8;
-                y_pos /= 8;
-
-                if (y_pos >= N_CHAR_ROWS) {
+        while (!check_vblank()) {
+            int idx, x_pos, y_pos, color;
+            char const *inp;
+            unsigned ret_val = 0;
+            if (check_msg(&msg)) {
+                switch (msg.opcode) {
+                case ARM7_OPCODE_FIBONACCI:
+                    arm7_operational = validate_fibonacci(msg.msg);
                     return_msg(0);
                     break;
+                case ARM7_OPCODE_PRINT:
+                    x_pos = ((int*)msg.msg)[0];
+                    y_pos = ((int*)msg.msg)[1];
+                    color = ((int*)msg.msg)[2];
+                    for (idx = 12; idx < (DATA_LEN - 1); idx++)
+                        arm_msg[idx - 12] = msg.msg[idx];
+                    arm_msg[(DATA_LEN - 1)] = '\0';
+
+                    x_pos /= 8;
+                    y_pos /= 8;
+
+                    if (y_pos >= N_CHAR_ROWS) {
+                        return_msg(0);
+                        break;
+                    }
+
+                    inp = arm_msg;
+                    while (*inp && x_pos < N_CHAR_COLS) {
+                        txt_colors[y_pos][x_pos] = color;
+                        txt_buf[y_pos][x_pos++] = *inp++;
+                    }
+                    return_msg(0);
+                    break;
+                case ARM7_OPCODE_GET_BTNS:
+                    // d-pad down
+                    if (btns & (1 << 5))
+                        ret_val |= 0x80;
+
+                    // d-pad up
+                    if (btns & (1 << 4))
+                        ret_val |= 0x40;
+
+                    // A button
+                    if (btns & (1 << 2))
+                        ret_val |= 0x08;
+
+                    return_msg(ret_val);
+                    break;
                 }
-
-                inp = arm_msg;
-                while (*inp && x_pos < N_CHAR_COLS) {
-                    txt_colors[y_pos][x_pos] = color;
-                    txt_buf[y_pos][x_pos++] = *inp++;
-                }
-                return_msg(0);
-                break;
-            case ARM7_OPCODE_GET_BTNS:
-                // d-pad down
-                if (btns & (1 << 5))
-                    ret_val |= 0x80;
-
-                // d-pad up
-                if (btns & (1 << 4))
-                    ret_val |= 0x40;
-
-                // A button
-                if (btns & (1 << 2))
-                    ret_val |= 0x08;
-
-                return_msg(ret_val);
-                break;
             }
         }
         prev_btns = btns;
+        swap_buffers();
     }
 
     return 0;
