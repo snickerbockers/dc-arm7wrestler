@@ -179,21 +179,23 @@ static void enable_arm(void) {
 #define MSG_OPCODE      (*(unsigned volatile*)0xa0900008)
 #define MSG_DATA_P      ((unsigned volatile*)0xa090000c)
 
+#define DATA_LEN 52
+
 struct msg {
     unsigned opcode;
-    char msg[52];
+    char msg[DATA_LEN];
 };
 
 static int check_msg(struct msg *msgp);
 
-static int validate_fibonacci(char const dat[52]) {
+static int validate_fibonacci(char const dat[DATA_LEN]) {
     unsigned const *dat32 = (unsigned const*)dat;
 
     if (dat32[0] != 1 || dat32[1] != 1)
         return 0;
 
     unsigned idx;
-    for (idx = 2; idx < 52/4; idx++)
+    for (idx = 2; idx < DATA_LEN/4; idx++)
         if (dat32[idx] != dat32[idx - 1] + dat32[idx - 2])
             return 0;
     return 1;
@@ -238,7 +240,7 @@ static int check_msg(struct msg *msgp) {
 
     unsigned *dstp = (unsigned*)msgp->msg;
     unsigned idx;
-    for (idx = 0; idx < 52/4; idx++) {
+    for (idx = 0; idx < DATA_LEN/4; idx++) {
         dstp[idx] = MSG_DATA_P[idx];
     }
 
@@ -290,7 +292,7 @@ int dcmain(int argc, char **argv) {
      * We only have 4KB!
      */
     struct msg msg;
-    static char arm_msg[52];
+    static char arm_msg[DATA_LEN];
     arm_msg[0] = 0;
 
     static char txt_buf[N_CHAR_ROWS][N_CHAR_COLS];
@@ -345,9 +347,9 @@ int dcmain(int argc, char **argv) {
                 x_pos = ((int*)msg.msg)[0];
                 y_pos = ((int*)msg.msg)[1];
                 color = ((int*)msg.msg)[2];
-                for (idx = 12; idx < 51; idx++)
+                for (idx = 12; idx < (DATA_LEN - 1); idx++)
                     arm_msg[idx - 12] = msg.msg[idx];
-                arm_msg[51] = '\0';
+                arm_msg[(DATA_LEN - 1)] = '\0';
 
                 x_pos /= 8;
                 y_pos /= 8;

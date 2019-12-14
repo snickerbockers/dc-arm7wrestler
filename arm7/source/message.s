@@ -2,6 +2,8 @@
 	.global xmit_fib_msg
 	.global xmit_string
 
+	.set DATA_LEN, 52
+
 	.align 4
 msg_init:
 	sub sp, sp, #4
@@ -46,7 +48,7 @@ xmit_string:
 	ldr r7, =xmit_string_buf
 
 	mov r6, r7
-	add r5, r6, #52
+	add r5, r6, #DATA_LEN
 	mov r4, #0
 
 clear_msg:
@@ -94,7 +96,7 @@ xmit_string_wait_for_ack:
 	mov pc, lr
 
 xmit_string_buf:
-	.zero 52
+	.zero DATA_LEN
 
 	.align 4
 init_fib_msg:
@@ -129,7 +131,7 @@ fib_loop:
 	mov r2, r4
 
 	add r3, r3, #1
-	cmp r3, #52/4
+	cmp r3, #DATA_LEN/4
 	bne fib_loop
 
 	@@ restore r4 from the stack
@@ -144,7 +146,7 @@ fib_msg_addr:
 
 
 xmit_pkt:
-	@@ r0 points to a 52-byte message string
+	@@ r0 points to a DATA_LEN-byte message string
 	@@ r1 contains the opcode
 
 	@@ push r4 onto the stack
@@ -156,7 +158,7 @@ xmit_pkt:
 	add r3, r2, #8
 	str r1, [r3]
 
-	@@ now write the 52-byte message
+	@@ now write the message
 	add r3, r3, #4
 	mov r4, #0
 put_long:
@@ -167,7 +169,7 @@ put_long:
 	add r3, r3, #4
 	add r0, r0, #4
 	add r4, r4, #1
-	cmp r4, #52/4
+	cmp r4, #DATA_LEN/4
 	bne put_long
 
 	@@ now write out the sequence number
@@ -190,7 +192,7 @@ put_long:
 	@@ first four bytes: sequence number (zero is considered invalid)
 	@@ second four bytes: sequence number ack (sh4 writes to this)
 	@@ third four bytes: opcode
-	@@ other 52 bytes: message data
+	@@ other DATA_LEN bytes: message data
 	.align 4
 pkt_out_addr:
 	.long 0x00100000
@@ -199,4 +201,4 @@ next_seqno:
 ack_seqno:
 	.long 0
 fib_msg:
-	.zero 52
+	.zero DATA_LEN
