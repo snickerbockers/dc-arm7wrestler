@@ -460,8 +460,6 @@ int dcmain(int argc, char **argv) {
 
     configure_video();
 
-    unsigned prev_btns = 0;
-
     for (;;) {
         clear_screen(get_backbuffer(), make_color(0, 0, 0));
 
@@ -512,24 +510,24 @@ int dcmain(int argc, char **argv) {
                     return_msg(0);
                     break;
                 case ARM7_OPCODE_GET_BTNS:
+                    ret_val = ~0;
                     // d-pad down
                     if (btns & (1 << 5))
-                        ret_val |= 0x80;
+                        ret_val &= ~0x80;
 
                     // d-pad up
                     if (btns & (1 << 4))
-                        ret_val |= 0x40;
+                        ret_val &= ~0x40;
 
                     // A button
                     if (btns & (1 << 2))
-                        ret_val |= 0x08;
+                        ret_val &= ~0x08;
 
                     return_msg(ret_val);
                     break;
                 }
             }
         }
-        prev_btns = btns;
         swap_buffers();
     }
 

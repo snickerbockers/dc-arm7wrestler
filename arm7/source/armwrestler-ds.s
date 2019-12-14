@@ -493,32 +493,32 @@ ClearScreen:
 	
 
 CheckKeys:
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-@
-@ XXX TODO - PORT THIS TO DREAMCAST
-@
-@ Instead of drawing the text, it will need to transmit it
-@ to the SH4 so it can draw the text for us.
-@
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-	@@ mov 	r0,#0x4000000
-	@@ add 	r0,r0,#0x130
-	@@ ldrh 	r2,[r0]
-	@@ ldr 	r0,=(VARBASE+12)
-	@@ ldrh 	r3,[r0]
-	@@ and 	r2,r2,#0xff
-
-	@@ eor 	r2,r2,#0xff
-	@@ strh 	r2,[r0]
-	@@ cmp 	r2,#0
-	@@ eorne 	r2,r2,r3
-	stmfd 	sp!,{lr}
+	stmfd 	sp!,{r4-r5,lr}
 
 	bl get_btns
-
 	mov r2, r0
 
-	ldmfd 	sp!,{lr}
+	ldrb 	r0,=(VARBASE+12)
+	add     r4, r0, #1
+
+	@ XXX emulate a 16-bit load
+	ldrb 	r3,[r0]
+	ldrb    r5,[r4]
+	orr 	r3,r3,r5,lsl#8
+
+	and 	r2,r2,#0xff
+	eor 	r2,r2,#0xff
+
+	@ XXX emulate a 16-bit store
+	strb 	r2,[r0]
+	mov     r5,r2,lsr#8
+	and     r5,r5,#0xff
+	strb    r5,[r4]
+
+	cmp 	r2,#0
+	eorne 	r2,r2,r3
+
+	ldmfd 	sp!,{r4-r5,lr}
 	mov 	pc,lr
 .pool
 .align
