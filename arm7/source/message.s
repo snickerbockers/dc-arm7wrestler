@@ -2,7 +2,7 @@
 	.global xmit_fib_msg
 	.global xmit_string
 
-	.set DATA_LEN, 52
+	.set DATA_LEN, 116
 
 	.align 4
 msg_init:

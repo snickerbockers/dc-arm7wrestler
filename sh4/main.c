@@ -179,7 +179,7 @@ static void enable_arm(void) {
 #define MSG_OPCODE      (*(unsigned volatile*)0xa0900008)
 #define MSG_DATA_P      ((unsigned volatile*)0xa090000c)
 
-#define DATA_LEN 52
+#define DATA_LEN 116
 
 struct msg {
     unsigned opcode;
