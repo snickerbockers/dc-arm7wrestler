@@ -450,10 +450,10 @@ int dcmain(int argc, char **argv) {
 
     create_font(fonts[0], make_color(0, 0, 0), make_color(0, 0, 0));
     create_font(fonts[1], make_color(0, 197, 0), make_color(0, 0, 0));
-    create_font(fonts[2], make_color(0, 0, 197), make_color(0, 0, 0));
+    create_font(fonts[2], make_color(197, 0, 9), make_color(0, 0, 0));
     create_font(fonts[3], make_color(255, 255, 255), make_color(0, 0, 0));
-    create_font(fonts[4], make_color(230, 197, 197), make_color(0, 0, 0));
-    create_font(fonts[5], make_color(24, 131, 255), make_color(0, 0, 0));
+    create_font(fonts[4], make_color(197, 197, 230), make_color(0, 0, 0));
+    create_font(fonts[5], make_color(255, 131, 24), make_color(0, 0, 0));
 
     init_arm_cpu();
 
