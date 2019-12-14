@@ -482,13 +482,10 @@ dr_done:
 
 
 ClearScreen:	
-	mov 	r0,#0x2300000
-	mov 	r4,#0
-	ldr 	r5,=24576
-	cs_repeat:
-		str 	r4,[r0],#4
-		subs 	r5,r5,#1
-		bne 	cs_repeat
+	stmfd 	sp!,{lr}
+	bl clear_screen
+	ldmfd 	sp!,{lr}
+
 	mov 	pc,lr
 	
 

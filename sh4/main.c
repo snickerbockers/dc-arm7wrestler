@@ -208,6 +208,7 @@ static int validate_fibonacci(char const dat[DATA_LEN]) {
 #define ARM7_OPCODE_FIBONACCI 69
 #define ARM7_OPCODE_PRINT 70
 #define ARM7_OPCODE_GET_BTNS 71
+#define ARM7_OPCODE_CLEAR_SCREEN 72
 
 static int arm7_operational;
 static unsigned last_seqno;
@@ -524,6 +525,12 @@ int dcmain(int argc, char **argv) {
                         ret_val &= ~0x08;
 
                     return_msg(ret_val);
+                    break;
+                case ARM7_OPCODE_CLEAR_SCREEN:
+                    for (y_pos = 0; y_pos < N_CHAR_ROWS; y_pos++)
+                        for (x_pos = 0; x_pos < N_CHAR_COLS; x_pos++)
+                            txt_buf[y_pos][x_pos] = '\0';
+                    return_msg(0);
                     break;
                 }
             }

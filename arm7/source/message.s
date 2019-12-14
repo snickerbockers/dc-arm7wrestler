@@ -2,6 +2,7 @@
 	.global xmit_fib_msg
 	.global xmit_string
 	.global get_btns
+	.global clear_screen
 
 	.set DATA_LEN, 112
 
@@ -167,6 +168,28 @@ get_btns_wait_for_ack:
 	@@ get the return value
 	add r1, r1, #4
 	ldr r0, [r1]
+
+	ldmfd 	sp!,{lr}
+	mov pc, lr
+
+clear_screen:
+	@@ tell the SH4 to clear the screen
+	@@ this function accepts no parameters and returns no values
+	stmfd 	sp!,{lr}
+
+	mov r0, #0
+	mov r1, #72
+
+	bl xmit_pkt
+
+	@@ now wait for the response
+	ldr r0, ack_seqno
+	ldr r1, pkt_out_addr
+	add r1, r1, #4
+clear_screen_wait_for_ack:
+	ldr r2, [r1]
+	cmp r2, r0
+	bne clear_screen_wait_for_ack
 
 	ldmfd 	sp!,{lr}
 	mov pc, lr
