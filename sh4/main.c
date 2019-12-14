@@ -176,10 +176,11 @@ static void enable_arm(void) {
 
 #define MSG_SEQNO       (*(unsigned volatile*)0xa0900000)
 #define MSG_SEQNO_ACK   (*(unsigned volatile*)0xa0900004)
-#define MSG_OPCODE      (*(unsigned volatile*)0xa0900008)
-#define MSG_DATA_P      ((unsigned volatile*)0xa090000c)
+#define MSG_RET_OUT     (*(unsigned volatile*)0xa0900008)
+#define MSG_OPCODE      (*(unsigned volatile*)0xa090000c)
+#define MSG_DATA_P      ((unsigned volatile*)0xa0900010)
 
-#define DATA_LEN 116
+#define DATA_LEN 112
 
 struct msg {
     unsigned opcode;
@@ -244,9 +245,14 @@ static int check_msg(struct msg *msgp) {
         dstp[idx] = MSG_DATA_P[idx];
     }
 
-    MSG_SEQNO_ACK = seqno;
     return 1;
 }
+
+static int return_msg(unsigned ret_val) {
+    MSG_RET_OUT = ret_val;
+    MSG_SEQNO_ACK = last_seqno;
+}
+
 
 #define REG_ISTNRM (*(unsigned volatile*)0xA05F6900)
 
@@ -342,6 +348,7 @@ int dcmain(int argc, char **argv) {
             switch (msg.opcode) {
             case ARM7_OPCODE_FIBONACCI:
                 arm7_operational = validate_fibonacci(msg.msg);
+                return_msg(0);
                 break;
             case ARM7_OPCODE_PRINT:
                 x_pos = ((int*)msg.msg)[0];
@@ -354,14 +361,17 @@ int dcmain(int argc, char **argv) {
                 x_pos /= 8;
                 y_pos /= 8;
 
-                if (y_pos >= N_CHAR_ROWS)
+                if (y_pos >= N_CHAR_ROWS) {
+                    return_msg(0);
                     break;
+                }
 
                 inp = arm_msg;
                 while (*inp && x_pos < N_CHAR_COLS) {
                     txt_colors[y_pos][x_pos] = color;
                     txt_buf[y_pos][x_pos++] = *inp++;
                 }
+                return_msg(0);
                 break;
             }
         }

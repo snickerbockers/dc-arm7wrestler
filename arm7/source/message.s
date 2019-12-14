@@ -2,7 +2,7 @@
 	.global xmit_fib_msg
 	.global xmit_string
 
-	.set DATA_LEN, 116
+	.set DATA_LEN, 112
 
 	.align 4
 msg_init:
@@ -155,7 +155,7 @@ xmit_pkt:
 
 	@@ first write out the opcode
 	ldr r2, pkt_out_addr
-	add r3, r2, #8
+	add r3, r2, #12
 	str r1, [r3]
 
 	@@ now write the message
@@ -191,6 +191,7 @@ put_long:
 	@@ 0x00100000 (1MB)
 	@@ first four bytes: sequence number (zero is considered invalid)
 	@@ second four bytes: sequence number ack (sh4 writes to this)
+	@@ third four bytes: return value (sh4 writes to this)
 	@@ third four bytes: opcode
 	@@ other DATA_LEN bytes: message data
 	.align 4
