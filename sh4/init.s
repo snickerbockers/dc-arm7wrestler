@@ -58,16 +58,7 @@ configure_cache:
 ccr_addr:
 	.long 0xff00001c
 ccr_val:
-	! disable o-cache
-	! Otherwise I get some issues reading back data from the ARM7 on real
-	! hardware.
-	! I'm not sure why that is since I use the 0xa0000000 prefix, which
-	! *should* disable caching.  Apparently it's not working the way I
-	! thought it does because killing the cache here fixes many problems
-	!
-	! Anyways, this isn't a performance test, so killing the sh4 cache isn't
-	! that big of a deal.  It may be prudent to only do this when accessing
-	! aica memory, though.
+	! enable caching
 	.long 0x090d
 
 
