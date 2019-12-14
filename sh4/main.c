@@ -524,6 +524,10 @@ int dcmain(int argc, char **argv) {
                     if (btns & (1 << 2))
                         ret_val &= ~0x08;
 
+                    // B button
+                    if (btns & (1 << 1))
+                        ret_val &= ~0x04;
+
                     return_msg(ret_val);
                     break;
                 case ARM7_OPCODE_CLEAR_SCREEN:
