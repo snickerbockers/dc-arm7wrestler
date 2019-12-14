@@ -512,8 +512,13 @@ CheckKeys:
 	@@ strh 	r2,[r0]
 	@@ cmp 	r2,#0
 	@@ eorne 	r2,r2,r3
+	stmfd 	sp!,{lr}
 
-	eor r2, r2, r2 @ XXX this was not in the original version
+	bl get_btns
+
+	mov r2, r0
+
+	ldmfd 	sp!,{lr}
 	mov 	pc,lr
 .pool
 .align

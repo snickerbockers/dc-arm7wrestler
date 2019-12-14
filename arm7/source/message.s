@@ -1,6 +1,7 @@
 	.global msg_init
 	.global xmit_fib_msg
 	.global xmit_string
+	.global get_btns
 
 	.set DATA_LEN, 112
 
@@ -144,6 +145,31 @@ fib_loop:
 fib_msg_addr:
 	.long fib_msg
 
+get_btns:
+	@@ returns which buttons changed since the last invocation in r0
+	@@ this function accepts no parameters
+	stmfd 	sp!,{lr}
+
+	mov r0, #0
+	mov r1, #71
+
+	bl xmit_pkt
+
+	@@ now wait for the response
+	ldr r0, ack_seqno
+	ldr r1, pkt_out_addr
+	add r1, r1, #4
+get_btns_wait_for_ack:
+	ldr r2, [r1]
+	cmp r2, r0
+	bne get_btns_wait_for_ack
+
+	@@ get the return value
+	add r1, r1, #4
+	ldr r0, [r1]
+
+	ldmfd 	sp!,{lr}
+	mov pc, lr
 
 xmit_pkt:
 	@@ r0 points to a DATA_LEN-byte message string
@@ -158,6 +184,9 @@ xmit_pkt:
 	add r3, r2, #12
 	str r1, [r3]
 
+	cmp r0, #0
+	beq done_writing_msg
+
 	@@ now write the message
 	add r3, r3, #4
 	mov r4, #0
@@ -171,7 +200,7 @@ put_long:
 	add r4, r4, #1
 	cmp r4, #DATA_LEN/4
 	bne put_long
-
+done_writing_msg:
 	@@ now write out the sequence number
 	ldr r0, next_seqno
 	str r0, [r2]
