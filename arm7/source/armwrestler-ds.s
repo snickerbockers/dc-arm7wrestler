@@ -101,22 +101,22 @@ forever:
 	beq 	handle_menu
 		ldr 	r0,=szStart
 		mov 	r1,#20+8
-		mov 	r2,#180
+		mov 	r2,#144
 		mov 	r3,#5
 		bl 	DrawText	
 		ldr 	r0,=szNext
 		mov 	r1,#76+8
-		mov 	r2,#180
+		mov 	r2,#144
 		mov 	r3,#4
 		bl 	DrawText	
 		ldr 	r0,=szSelect2
 		mov 	r1,#132+8
-		mov 	r2,#180
+		mov 	r2,#144
 		mov 	r3,#5
 		bl 	DrawText	
 		ldr 	r0,=szMenu
 		mov 	r1,#192+8
-		mov 	r2,#180
+		mov 	r2,#144
 		mov 	r3,#4
 		bl 	DrawText	
 
@@ -146,12 +146,12 @@ forever:
 	handle_menu:
 		ldr 	r0,=szSelect
 		mov 	r1,#4+4
-		mov 	r2,#180
+		mov 	r2,#144
 		mov 	r3,#4
 		bl 	DrawText	
 		ldr 	r0,=szStart2
 		mov 	r1,#196+8
-		mov 	r2,#180
+		mov 	r2,#144
 		mov 	r3,#5
 		bl 	DrawText	
 
