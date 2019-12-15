@@ -101,7 +101,7 @@ on_error:
 	bl notify_exception
 
 on_error_forever:
-	b forever
+	b on_error_forever
 
 	@@ this will never be executed but is here for posterity
 	ldr lr, [sp]
