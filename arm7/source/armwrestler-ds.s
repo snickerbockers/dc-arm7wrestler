@@ -111,7 +111,13 @@ on_error_forever:
 excp_stack:
 	.zero 128
 
-reset:	
+	.align 4
+reset:
+
+	@@ XXX make sure interrupts are masked
+	mrs r0, cpsr
+	orr r0, r0,#0xc0
+	msr cpsr, r0
 
 @ XXX - not sure what this does.  It's probably something DS-specific
 @ mov	r0, #0x04000000			@ IME = 0;
@@ -2219,7 +2225,7 @@ Test4:
 
 	
 	@ LDMIBS!
-	mov	r0, #0x12	@ Switch to IRQ mode
+	mov	r0, #0xd2	@ Switch to IRQ mode (XXX: keep irqs disabled)
 	msr	cpsr, r0
 	mov	r1,#0
 	mov	r14,#123
@@ -2237,7 +2243,7 @@ Test4:
 	cmp	r14,#123
 	orrne	r1,r1,#BAD_Rd
 	mov 	r2,#4
-	mov	r0, #0x1F	@ Switch to user mode
+	mov	r0, #0xd3	@ Switch to supervisor mode (XXX was system mode)
 	msr	cpsr, r0
 	orr 	r1,r1,#0x40000000
 	ldr 	r0,=szLDM
@@ -2245,7 +2251,7 @@ Test4:
 	add 	r8,r8,#8
 
 	@ LDMIAS!
-	mov	r0, #0x12	@ Switch to IRQ mode
+	mov	r0, #0xd2	@ Switch to IRQ mode (XXX: keep irqs disabled)
 	msr	cpsr, r0
 	mov	r1,#0
 	mov	r14,#123
@@ -2263,7 +2269,7 @@ Test4:
 	cmp	r14,#123
 	orrne	r1,r1,#BAD_Rd
 	mov 	r2,#5
-	mov	r0, #0x1F	@ Switch to user mode
+	mov	r0, #0xd3	@ Switch to supervisor mode (XXX was system mode)
 	msr	cpsr, r0
 	orr 	r1,r1,#0x40000000
 	ldr 	r0,=szLDM
@@ -2271,7 +2277,7 @@ Test4:
 	add 	r8,r8,#8
 
 	@ LDMDBS!
-	mov	r0, #0x12	@ Switch to IRQ mode
+	mov	r0, #0xd2	@ Switch to IRQ mode (XXX: keep irqs disabled)
 	msr	cpsr, r0
 	mov	r1,#0
 	mov	r14,#123
@@ -2288,7 +2294,7 @@ Test4:
 	cmp	r14,#123
 	orrne	r1,r1,#BAD_Rd
 	mov 	r2,#6
-	mov	r0, #0x1F	@ Switch to user mode
+	mov	r0, #0xd3	@ Switch to supervisor mode (XXX was system mode)
 	msr	cpsr, r0
 	orr 	r1,r1,#0x40000000
 	ldr 	r0,=szLDM
@@ -2296,7 +2302,7 @@ Test4:
 	add 	r8,r8,#8
 
 	@ LDMDAS!
-	mov	r0, #0x12	@ Switch to IRQ mode
+	mov	r0, #0xd2	@ Switch to IRQ mode (XXX: keep irqs disabled)
 	msr	cpsr, r0
 	mov	r1,#0
 	mov	r14,#123
@@ -2314,7 +2320,7 @@ Test4:
 	cmp	r14,#123
 	orrne	r1,r1,#BAD_Rd
 	mov 	r2,#7
-	mov	r0, #0x1F	@ Switch to user mode
+	mov	r0, #0xd3	@ Switch to supervisor mode (XXX was system mode)
 	msr	cpsr, r0
 	orr 	r1,r1,#0x40000000
 	ldr 	r0,=szLDM
