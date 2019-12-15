@@ -8,10 +8,10 @@ clean:
 	rm -f armwrestler-ds.o armwrestler-ds.elf armwrestler-ds.bin
 
 armwrestler-ds.o: source/armwrestler-ds.s
-	$(ARM_AS) -EL -mcpu=arm7 -o armwrestler-ds.o source/armwrestler-ds.s
+	$(ARM_AS) -EL -mcpu=arm7di -o armwrestler-ds.o source/armwrestler-ds.s
 
 message.o: source/message.s
-	$(ARM_AS) -EL -mcpu=arm7 -o message.o source/message.s
+	$(ARM_AS) -EL -mcpu=arm7di -o message.o source/message.s
 
 armwrestler-ds.elf: armwrestler-ds.o message.o
 	$(ARM_LD) -Ttext 0x00000000 armwrestler-ds.o message.o -o armwrestler-ds.elf
