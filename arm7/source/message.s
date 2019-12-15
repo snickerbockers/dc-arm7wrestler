@@ -3,6 +3,7 @@
 	.global xmit_string
 	.global get_btns
 	.global clear_screen
+	.global notify_exception
 
 	.set DATA_LEN, 112
 
@@ -194,6 +195,33 @@ clear_screen_wait_for_ack:
 	ldmfd 	sp!,{lr}
 	mov pc, lr
 
+notify_exception:
+	@@ tell the SH4 we've had a critical error
+	@@ parameter r0 is an integer that identifies what kind of exception
+	stmfd 	sp!,{lr}
+
+	ldr r1, =notify_exception_buf
+	str r0, [r1]
+
+	mov r0, r1
+	mov r1, #73
+	bl xmit_pkt
+
+	@@ now wait for the response
+	ldr r0, ack_seqno
+	ldr r1, pkt_out_addr
+	add r1, r1, #4
+notify_exception_wait_for_ack:
+	ldr r2, [r1]
+	cmp r2, r0
+	bne notify_exception_wait_for_ack
+
+	ldmfd 	sp!,{lr}
+	mov pc, lr
+notify_exception_buf:
+	.zero DATA_LEN
+
+.align 4
 xmit_pkt:
 	@@ r0 points to a DATA_LEN-byte message string
 	@@ r1 contains the opcode

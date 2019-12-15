@@ -30,19 +30,75 @@ _start:
 	b fiq
 
 undefined:
+	sub sp, sp, #4
+	str lr, [sp]
+	mov r0, #0
+	bl on_error
+	ldr lr, [sp]
+	add sp, sp, #4
 	movs pc, r14
 swi:
+	sub sp, sp, #4
+	str lr, [sp]
+	mov r0, #1
+	bl on_error
+	ldr lr, [sp]
+	add sp, sp, #4
 	movs pc, r14
 pref_abort:
+	sub sp, sp, #4
+	str lr, [sp]
+	mov r0, #2
+	bl on_error
+	ldr lr, [sp]
+	add sp, sp, #4
 	subs pc, r14, #4
 data_abort:
+	sub sp, sp, #4
+	str lr, [sp]
+	mov r0, #3
+	bl on_error
+	ldr lr, [sp]
+	add sp, sp, #4
 	subs pc, r14, #8
 wtf_is_this:
+	sub sp, sp, #4
+	str lr, [sp]
+	mov r0, #4
+	bl on_error
+	ldr lr, [sp]
+	add sp, sp, #4
 	subs pc, r14, #4
 irq:
+	sub sp, sp, #4
+	str lr, [sp]
+	mov r0, #5
+	bl on_error
+	ldr lr, [sp]
+	add sp, sp, #4
 	subs pc, r14, #4
 fiq:
+	sub sp, sp, #4
+	str lr, [sp]
+	mov r0, #6
+	bl on_error
+	ldr lr, [sp]
+	add sp, sp, #4
 	subs pc, r14, #4
+
+on_error:
+	sub sp, sp, #4
+	str lr, [sp]
+
+	bl notify_exception
+
+on_error_forever:
+	b forever
+
+	@@ this will never be executed but is here for posterity
+	ldr lr, [sp]
+	add sp, sp, #4
+	mov pc, lr
 
 reset:	
 

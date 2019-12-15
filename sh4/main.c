@@ -209,6 +209,7 @@ static int validate_fibonacci(char const dat[DATA_LEN]) {
 #define ARM7_OPCODE_PRINT 70
 #define ARM7_OPCODE_GET_BTNS 71
 #define ARM7_OPCODE_CLEAR_SCREEN 72
+#define ARM7_OPCODE_EXCEPTION 73
 
 static int arm7_operational;
 static unsigned last_seqno;
@@ -436,6 +437,7 @@ int dcmain(int argc, char **argv) {
     struct msg msg;
     static char arm_msg[DATA_LEN];
     arm_msg[0] = 0;
+    char const* arm7_exception = (char const*)0x0;
 
     static char txt_buf[N_CHAR_ROWS][N_CHAR_COLS];
     static int txt_colors[N_CHAR_ROWS][N_CHAR_COLS];
@@ -465,15 +467,20 @@ int dcmain(int argc, char **argv) {
         clear_screen(get_backbuffer(), make_color(0, 0, 0));
 
         void volatile *fb = get_backbuffer();
-        int row, col;
-        for (row = 0; row < N_CHAR_ROWS; row++)
-            for (col = 0; col < N_CHAR_COLS; col++)
-                if (txt_buf[row][col] && txt_buf[row][col] != ' ') {
-                    int col_idx = txt_colors[row][col];
-                    if (col_idx >= N_FONTS)
-                        col_idx = N_FONTS - 1;
-                    draw_char(fb, fonts[col_idx], txt_buf[row][col], row, col);
-                }
+        if (arm7_exception) {
+            drawstring(fb, fonts[2], "ERROR - ARM7 CPU EXCEPTION RAISED", 0, 0);
+            drawstring(fb, fonts[2], arm7_exception, 1, 0);
+        } else {
+            int row, col;
+            for (row = 0; row < N_CHAR_ROWS; row++)
+                for (col = 0; col < N_CHAR_COLS; col++)
+                    if (txt_buf[row][col] && txt_buf[row][col] != ' ') {
+                        int col_idx = txt_colors[row][col];
+                        if (col_idx >= N_FONTS)
+                            col_idx = N_FONTS - 1;
+                        draw_char(fb, fonts[col_idx], txt_buf[row][col], row, col);
+                    }
+        }
 
         unsigned btns = ~get_controller_buttons();
 
@@ -534,6 +541,31 @@ int dcmain(int argc, char **argv) {
                     for (y_pos = 0; y_pos < N_CHAR_ROWS; y_pos++)
                         for (x_pos = 0; x_pos < N_CHAR_COLS; x_pos++)
                             txt_buf[y_pos][x_pos] = '\0';
+                    return_msg(0);
+                    break;
+                case ARM7_OPCODE_EXCEPTION:
+                    switch (((int*)msg.msg)[0]) {
+                    case 0:
+                        arm7_exception = "UNDEFINED";
+                        break;
+                    case 1:
+                        arm7_exception = "SWI";
+                        break;
+                    case 2:
+                        arm7_exception = "PREF ABORT";
+                        break;
+                    case 3:
+                        arm7_exception = "DATA ABORT";
+                        break;
+                    case 5:
+                        arm7_exception = "IRQ";
+                        break;
+                    case 6:
+                        arm7_exception = "FIQ";
+                        break;
+                    default:
+                        arm7_exception = "UNKNOWN EXCEPTION";
+                    }
                     return_msg(0);
                     break;
                 }
