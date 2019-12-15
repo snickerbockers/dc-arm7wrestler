@@ -1130,8 +1130,8 @@ Test1:
 	orr 	r2,r2,#0x11	
 	msr 	cpsr,r2		@ Set FIQ mode
 	mov 	r11,#2
-	orr 	r2,r2,#0x1f
-	msr 	cpsr,r2		@ Set System mode
+	orr 	r2,r2,#0x13
+	msr 	cpsr,r2		@ Set supervisor mode (XXX was originally system mode)
 	cmp 	r11,#1
 	orrne 	r1,r1,#BAD_Rd
 	ldr 	r0,=szMSR
