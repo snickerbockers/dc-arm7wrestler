@@ -30,6 +30,7 @@ _start:
 	b fiq
 
 undefined:
+	ldr sp, =excp_stack
 	sub sp, sp, #4
 	str lr, [sp]
 	mov r0, #0
@@ -38,6 +39,7 @@ undefined:
 	add sp, sp, #4
 	movs pc, r14
 swi:
+	ldr sp, =excp_stack
 	sub sp, sp, #4
 	str lr, [sp]
 	mov r0, #1
@@ -46,6 +48,7 @@ swi:
 	add sp, sp, #4
 	movs pc, r14
 pref_abort:
+	ldr sp, =excp_stack
 	sub sp, sp, #4
 	str lr, [sp]
 	mov r0, #2
@@ -54,6 +57,7 @@ pref_abort:
 	add sp, sp, #4
 	subs pc, r14, #4
 data_abort:
+	ldr sp, =excp_stack
 	sub sp, sp, #4
 	str lr, [sp]
 	mov r0, #3
@@ -62,6 +66,7 @@ data_abort:
 	add sp, sp, #4
 	subs pc, r14, #8
 wtf_is_this:
+	ldr sp, =excp_stack
 	sub sp, sp, #4
 	str lr, [sp]
 	mov r0, #4
@@ -70,6 +75,7 @@ wtf_is_this:
 	add sp, sp, #4
 	subs pc, r14, #4
 irq:
+	ldr sp, =excp_stack
 	sub sp, sp, #4
 	str lr, [sp]
 	mov r0, #5
@@ -78,9 +84,11 @@ irq:
 	add sp, sp, #4
 	subs pc, r14, #4
 fiq:
+	ldr sp, =excp_stack
 	sub sp, sp, #4
 	str lr, [sp]
 	mov r0, #6
+	mov r1, lr
 	bl on_error
 	ldr lr, [sp]
 	add sp, sp, #4
@@ -99,6 +107,9 @@ on_error_forever:
 	ldr lr, [sp]
 	add sp, sp, #4
 	mov pc, lr
+
+excp_stack:
+	.zero 128
 
 reset:	
 

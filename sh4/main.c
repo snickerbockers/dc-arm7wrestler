@@ -429,6 +429,67 @@ static unsigned get_controller_buttons(void) {
 #define N_CHAR_ROWS MAX_CHARS_Y
 #define N_CHAR_COLS MAX_CHARS_X
 
+static char const *hexstr(unsigned val) {
+    static char txt[8];
+    unsigned nib_no;
+    for (nib_no = 0; nib_no < 8; nib_no++) {
+        unsigned shift_amt = (7 - nib_no) * 4;
+        unsigned nibble = (val >> shift_amt) & 0xf;
+        switch (nibble) {
+        case 0:
+            txt[nib_no] = '0';
+            break;
+        case 1:
+            txt[nib_no] = '1';
+            break;
+        case 2:
+            txt[nib_no] = '2';
+            break;
+        case 3:
+            txt[nib_no] = '3';
+            break;
+        case 4:
+            txt[nib_no] = '4';
+            break;
+        case 5:
+            txt[nib_no] = '5';
+            break;
+        case 6:
+            txt[nib_no] = '6';
+            break;
+        case 7:
+            txt[nib_no] = '7';
+            break;
+        case 8:
+            txt[nib_no] = '8';
+            break;
+        case 9:
+            txt[nib_no] = '9';
+            break;
+        case 10:
+            txt[nib_no] = 'A';
+            break;
+        case 11:
+            txt[nib_no] = 'B';
+            break;
+        case 12:
+            txt[nib_no] = 'C';
+            break;
+        case 13:
+            txt[nib_no] = 'D';
+            break;
+        case 14:
+            txt[nib_no] = 'E';
+            break;
+        default:
+            txt[nib_no] = 'F';
+            break;
+        }
+    }
+    txt[8] = '\0';
+    return txt;
+}
+
 int dcmain(int argc, char **argv) {
     /*
      * The reason why these big arrays are static is to save on stack space.
@@ -438,6 +499,7 @@ int dcmain(int argc, char **argv) {
     static char arm_msg[DATA_LEN];
     arm_msg[0] = 0;
     char const* arm7_exception = (char const*)0x0;
+    unsigned arm7_excp_pc;
 
     static char txt_buf[N_CHAR_ROWS][N_CHAR_COLS];
     static int txt_colors[N_CHAR_ROWS][N_CHAR_COLS];
@@ -470,6 +532,8 @@ int dcmain(int argc, char **argv) {
         if (arm7_exception) {
             drawstring(fb, fonts[2], "ERROR - ARM7 CPU EXCEPTION RAISED", 0, 0);
             drawstring(fb, fonts[2], arm7_exception, 1, 0);
+            drawstring(fb, fonts[2], "PC=", 2, 0);
+            drawstring(fb, fonts[2], hexstr(arm7_excp_pc), 2, 3);
         } else {
             int row, col;
             for (row = 0; row < N_CHAR_ROWS; row++)
@@ -485,6 +549,8 @@ int dcmain(int argc, char **argv) {
         unsigned btns = ~get_controller_buttons();
 
         while (!check_vblank()) {
+            if (arm7_exception)
+                continue;
             int idx, x_pos, y_pos, color;
             char const *inp;
             unsigned ret_val = 0;
@@ -566,6 +632,7 @@ int dcmain(int argc, char **argv) {
                     default:
                         arm7_exception = "UNKNOWN EXCEPTION";
                     }
+                    arm7_excp_pc = ((int*)msg.msg)[1];
                     return_msg(0);
                     break;
                 }

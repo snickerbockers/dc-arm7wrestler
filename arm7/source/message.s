@@ -198,12 +198,15 @@ clear_screen_wait_for_ack:
 notify_exception:
 	@@ tell the SH4 we've had a critical error
 	@@ parameter r0 is an integer that identifies what kind of exception
+	@@ parameter r1 is the PC
 	stmfd 	sp!,{lr}
 
-	ldr r1, =notify_exception_buf
-	str r0, [r1]
+	ldr r2, =notify_exception_buf
+	str r0, [r2]
+	add r2, r2, #4
+	str r1, [r2]
 
-	mov r0, r1
+	ldr r0, =notify_exception_buf
 	mov r1, #73
 	bl xmit_pkt
 
