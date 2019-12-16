@@ -258,8 +258,8 @@ forever:
 		tsts 	r2,#0x80
 		beq 	not_down
 			add 	r3,r3,#1
-			cmp 	r3,#6
-			movgt 	r3,#6
+			cmp 	r3,#2
+			movgt 	r3,#2
 			movle 	r5,#1
 		not_down:
 		strb 	r3,[r4]
@@ -640,7 +640,7 @@ Menu:
 		ldr 	r0,[r5],#4
 		bl 	DrawText
 		add 	r4,r4,#8
-		cmp 	r4,#128
+		cmp 	r4,#96
 		bne 	draw_menuitems
 
 	ldr 	r0,=szMarker
@@ -2173,6 +2173,11 @@ Test4:
 
 	
 Test5:
+Test6:
+Test7:
+Test8:
+Test9:
+TestTmb:
 	stmfd sp!,{lr}
 	
 	ldr r0,=szAV5
@@ -2181,307 +2186,10 @@ Test5:
 	mov r3,#4
 	bl DrawText
 	
-
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-@
-@ XXX TODO - PORT THIS TO DREAMCAST
-@
-@ apparently we don't have the clz instruction
-@ IDK if there's a reasonable replacement or if this test
-@ needs to be scrapped.
-@
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-	@ CLZ
-	ldr r1, =exceptionFlag
-	mov r2, #0
-	str r2, [r1]
-	mov 	r1,#0
-	mov 	r2,#0x80000000
-	mov 	r3,#0x1F
-	mov 	r4,#0
-	@@ clz 	r0,r2 @ XXX RIGHT HERE
-	ldr r0, =exceptionFlag
-	ldr r0, [r0]
-	cmp 	r0,#0
-	orreq 	r1,r1,#0x80
-	ldr 	r0,=szCLZ
-	bl 	DrawResult
-	add 	r8,r8,#8
-
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-@
-@ XXX TODO - PORT THIS TO DREAMCAST
-@
-@ apparently we don't have the ldrd instruction
-@ IDK if there's a reasonable replacement or if this test
-@ needs to be scrapped.
-@
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-	@ LDRD
-	mov 	r1,#0
-	ldr 	r0,=var64
-	mov 	r2,#0
-
-	mov 	r3,#0
-	mov r4, #0
-	mov r5, #0
-	@@ ldrd 	r2,[r0],#-1 @ RIGHT HERE
-	@ldr 	r4,=0x11223344
-	@ldr 	r5,=0x55667788
-	mov r4, #0
-	mov r5, #0
-	cmp 	r2,r4
-	orrne 	r1,r1,#BAD_Rd
-	cmp 	r3,r5
-	orrne 	r1,r1,#BAD_Rd
-	ldr 	r4,=var64 - 1
-	cmp 	r0,r4
-	orrne 	r1,r1,#BAD_Rn
-	ldr 	r0,=szLDRD
-	bl 	DrawResult
-	add 	r8,r8,#8
-	
-	
-	@ MRC
-	ldr r1, =exceptionFlag
-	mov r2, #0
-	str r2, [r1]
-	mov r1, #0
-	mrc 	p15,0,r2,c0,c0,1	@ Get cache type
-	ldr r0, =exceptionFlag
-	ldr r0, [r0]
-	cmp 	r0,#0
-	orreq 	r1,r1,#0x80
-	
-	ldr r1, =exceptionFlag
-	mov r2, #0
-	str r2, [r1]
-	mov r1, #0
-	mrc 	p14,0,r2,c0,c0,1	@ cp14
-	ldr r0, =exceptionFlag
-	ldr r0, [r0]
-	cmp 	r0,#0
-	orrne 	r1,r1,#0x80
-	ldr 	r0,=szMRC
-	bl 	DrawResult
-	add 	r8,r8,#8
-
-
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-@
-@ XXX TODO - PORT THIS TO DREAMCAST
-@
-@ apparently we don't have the qadd instruction
-@ IDK if there's a reasonable replacement or if this test
-@ needs to be scrapped.
-@
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-	@ QADD
-	ldr r1, =exceptionFlag
-	mov r2, #0
-	str r2, [r1]
-	mov 	r1,#0
-	msr 	cpsr_f,#0
-	mov 	r2,#0x70000000
-	@@ qadd 	r3,r2,r2 @ RIGHT HERE
-	ldr r0, =exceptionFlag
-	ldr r0, [r0]
-	cmp 	r0,#0
-	orreq 	r1,r1,#0x80
-	ldr 	r0,=szQADD
-	bl 	DrawResult
-	add 	r8,r8,#8
-
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-@
-@ XXX TODO - PORT THIS TO DREAMCAST
-@
-@ apparently we don't have the smlabb instruction
-@ IDK if there's a reasonable replacement or if this test
-@ needs to be scrapped.
-@
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-	@ SMLABB
-	mov 	r1,#0
-	msr 	cpsr_f,#0
-	mov 	r2,#0x7000
-	mov 	r3,#0x7000
-	mov 	r4,#0x50000000
-	mov r5,#0
-	@@ smlabb	r5,r2,r3,r4 @ XXX RIGHT HERE
-	cmp 	r5,#0
-	orrne 	r1,r1,#BAD_Rd
-	mrs 	r3,cpsr
-	and 	r3,r3,#0x08000000
-	cmp 	r3,#0x08000000
-	orreq 	r1,r1,#0x40
-	mov 	r3,#0x7000
-	mov 	r4,#0
-	@@ smlabb 	r5,r2,r3,r4 @ XXX RIGHT HERE
-	cmp 	r5,#0
-	orrne 	r1,r1,#BAD_Rd
-	mrs 	r3,cpsr
-	and 	r3,r3,#0x08000000
-	cmp 	r3,#0x08000000
-	orreq 	r1,r1,#0x40
-	ldr 	r0,=szSMLABB
-	bl 	DrawResult
-	add 	r8,r8,#8
-
-
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-@
-@ XXX TODO - PORT THIS TO DREAMCAST
-@
-@ apparently we don't have the smlabt instruction
-@ IDK if there's a reasonable replacement or if this test
-@ needs to be scrapped.
-@
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-	@ SMLABT
-	mov 	r1,#0
-	msr 	cpsr_f,#0
-	mov 	r2,#0x00007000
-	mov 	r3,#0x70000000
-	mov 	r4,#0x50000000
-	mov r5,#0
-	@@ smlabt 	r5,r2,r3,r4 @ XXX RIGHT HERE
-	cmp 	r5,#0
-	orrne 	r1,r1,#BAD_Rd
-	mrs 	r3,cpsr
-	and 	r3,r3,#0x08000000
-	cmp 	r3,#0x08000000
-	orreq 	r1,r1,#0x40
-	mov 	r3,#0x70000000
-	mov 	r4,#0
-	@@ smlabt 	r5,r2,r3,r4 @ XXX RIGHT HERE
-	cmp 	r5,#0
-	orrne 	r1,r1,#BAD_Rd
-	mrs 	r3,cpsr
-	and 	r3,r3,#0x08000000
-	cmp 	r3,#0x08000000
-	orreq 	r1,r1,#0x40
-	ldr 	r0,=szSMLABT
-	bl 	DrawResult
-	add 	r8,r8,#8
-
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-@
-@ XXX TODO - PORT THIS TO DREAMCAST
-@
-@ apparently we don't have the smlatb instruction
-@ IDK if there's a reasonable replacement or if this test
-@ needs to be scrapped.
-@
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-	@ SMLATB
-	mov 	r1,#0
-	msr 	cpsr_f,#0
-	mov 	r2,#0x00007000
-	mov 	r3,#0x70000000
-	mov 	r4,#0x50000000
-	mov r5,#0
-	@@ smlatb 	r5,r3,r2,r4 @ XXX RIGHT HERE
-	cmp 	r5,#0
-	orrne 	r1,r1,#BAD_Rd
-	mrs 	r3,cpsr
-	and 	r3,r3,#0x08000000
-	cmp 	r3,#0x08000000
-	orreq 	r1,r1,#0x40
-	mov 	r3,#0x70000000
-	mov 	r4,#0
-	@@ smlatb 	r5,r3,r2,r4 @ XXX RIGHT HERE
-	cmp 	r5,#0
-	orrne 	r1,r1,#BAD_Rd
-	mrs 	r3,cpsr
-	and 	r3,r3,#0x08000000
-	cmp 	r3,#0x08000000
-	orreq 	r1,r1,#0x40
-	ldr 	r0,=szSMLATB
-	bl 	DrawResult
-	add 	r8,r8,#8
-
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-@
-@ XXX TODO - PORT THIS TO DREAMCAST
-@
-@ apparently we don't have the smlatt instruction
-@ IDK if there's a reasonable replacement or if this test
-@ needs to be scrapped.
-@
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-	@ SMLATT
-	mov 	r1,#0
-	msr 	cpsr_f,#0
-	mov 	r2,#0x70000000
-	mov 	r3,#0x70000000
-	mov 	r4,#0x50000000
-	mov r5, #0
-	@@ smlatt 	r5,r2,r3,r4 @ XXX RIGHT HERE
-	cmp 	r5,#0
-	orrne 	r1,r1,#BAD_Rd
-	mrs 	r3,cpsr
-	and 	r3,r3,#0x08000000
-	cmp 	r3,#0x08000000
-	orreq 	r1,r1,#0x40
-	mov 	r3,#0x70000000
-	mov 	r4,#0
-	@@ smlatt 	r5,r2,r3,r4 @ XXX RIGHT HERE
-	cmp 	r5,#0
-	orrne 	r1,r1,#BAD_Rd
-	mrs 	r3,cpsr
-	and 	r3,r3,#0x08000000
-	cmp 	r3,#0x08000000
-	orreq 	r1,r1,#0x40
-	ldr 	r0,=szSMLATT
-	bl 	DrawResult
-	add 	r8,r8,#8
-
 	ldmfd 	sp!,{lr}
 	mov 	pc,lr
 .pool
 .align
-
-
-Test6:
-Test7:
-Test8:
-Test9:
-
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-@
-@ XXX TODO - PORT THIS TO DREAMCAST
-@
-@ apparently we don't have the bx instruction
-@ IDK if there's a reasonable replacement or if this test
-@ needs to be scrapped.
-@
-@ Actually, on second thought it looks like this has something to do
-@ with  thumb mode, in which case we definitely don't have a reasonable
-@ replacement and this test does need to be scrapped.
-@
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-TestTmb:
-	mov r8,#0
-	mov r9,#3
-	ldr r11,=0xFFFFFFFF
-
-	ldr r0,=menulinks
-	ldr r4,=CURSEL
-	ldrb r3,[r4]
-	sub r4,r4,#8
-	add r0,r0,r3,lsl#2
-	ldr r5,[r0]
-	sub r5,r5,#11
-	str r5,[r4]
-	
-	@@ ldr r0,=_tmbmain @ XXX RIGHT HERE
-	add r0,r0,#1
-	@@ bx r0 @ XXX RIGHT HERE
-
-.pool
-.align
-
 
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 @
