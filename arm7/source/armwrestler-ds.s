@@ -331,10 +331,7 @@ DrawText:
 
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 @
-@ XXX TODO - PORT THIS TO DREAMCAST
-@
-@ Instead of drawing the text, it will need to transmit it
-@ to the SH4 so it can draw the text for us.
+@ XXX Draws a 32-bit hex value by seinding it to the SH4
 @
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 DrawHex:
@@ -342,47 +339,36 @@ DrawHex:
 @ r1: x
 @ r2: y
 @ r3: color
-	stmfd 	sp!,{r4-r10}
+	stmfd 	sp!,{r4-r7,lr}
 
-@@ 	ldr 	r10,=palette
-@@ 	mov 	r3,r3,lsl#1
-@@ 	ldrh 	r3,[r10,r3]
+	mov r5, #hex_tbl
+	mov r6, #buf
+	mov r7, #8
 
-@@ 	mov 	r9,r2,lsl#9
-@@ 	add 	r9,r9,r1,lsl#1
-@@ 	add 	r9,r9,#0x2300000
-@@ 	mov 	r8,#8
+the_loop:
+	mov r0, r0, ror#28
+	and r4, r0, #0xf
+	add r4, r4, r5
+	ldrb r4, [r4]
+	strb r4, [r6]
+	add r6,r6,#1
 
-@@ dh_cloop:
-@@ 	ldr 	r10,=font
-@@ 	mov 	r0,r0,ror#28
-@@ 	and 	r4,r0,#0xF
-@@ 	cmp	r4,#9
-@@ 	add 	r4,r4,#11
-@@ 	addhi	r4,r4,#7
-@@ 	add 	r10,r10,r4,lsl#6
+	subs r7,#1
+	bne the_loop
 
-@@ 	mov 	r7,r9
-@@ 	add 	r9,r9,#16
-@@ 	mov 	r5,#8
-@@ dh_vloop:
-@@ 	mov 	r6,#8
-@@ dh_hloop:
-@@ 	ldrb 	r1,[r10],#1
-@@ 	ands 	r1,r1,#0xFF
-@@ 	movne 	r1,r3
-@@ 	strh 	r1,[r7],#2
-@@ 	subs 	r6,r6,#1
-@@ 	bne 	dh_hloop
+	mov r0, #buf
+	bl DrawText
 
-@@ 	add 	r7,r7,#496
-@@ 	subs 	r5,r5,#1
-@@ 	bne 	dh_vloop
-
-@@ 	subs 	r8,r8,#1
-@@ 	bne 	dh_cloop
-	ldmfd 	sp!,{r4-r10}
+	ldmfd 	sp!,{r4-r7,lr}
 	mov 	pc,lr
+
+	.align 4
+hex_tbl:
+	.asciz "0123456789abcdef"
+	.align 4
+buf:
+	.zero 9
+
 .pool
 .align
 
