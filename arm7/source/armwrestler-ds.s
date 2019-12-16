@@ -934,53 +934,9 @@ labelthree:
 	bl 	DrawResult
 	add 	r8,r8,#8
 
-	
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-@
-@ XXX TODO - PORT THIS TO DREAMCAST
-@
-@ apparently we don't have the umulls instruction
-@ IDK if there's a reasonable replacement or if this test
-@ needs to be scrapped.
-@
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-	@ UMULL
-	mov 	r1,#0
-	ldr 	r2,=0x80000000
-	mov 	r3,#8
-	@@ umulls 	r4,r5,r2,r3 @ XXX RIGHT HERE
-	orrmi 	r1,r1,#2
-	orreq 	r1,r1,#8
-	mov 	r2,#4
-	cmp 	r2,r5
-	orrne 	r1,r1,#BAD_Rd
-	ldr 	r0,=szUMULL
-	bl 	DrawResult
-	add 	r8,r8,#8
+	@@ XXX UMULL and SMULL were both removed because they don't exist on
+	@@ Dreamcast's ARM
 
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-@
-@ XXX TODO - PORT THIS TO DREAMCAST
-@
-@ apparently we don't have the smulls instruction
-@ IDK if there's a reasonable replacement or if this test
-@ needs to be scrapped.
-@
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-	@ SMULL
-	mov 	r1,#0
-	ldr 	r2,=0x80000000
-	mov 	r3,#8
-	@@ smulls 	r4,r5,r2,r3 @ XXX RIGHT HERE
-	orrpl 	r1,r1,#2
-	orreq 	r1,r1,#8
-	ldr 	r2,=0xFFFFFFFC
-	cmp 	r2,r5
-	orrne 	r1,r1,#BAD_Rd
-	ldr 	r0,=szSMULL
-	bl 	DrawResult
-	add 	r8,r8,#8
-	
 	ldmfd 	sp!,{lr}
 	mov 	pc,lr
 .pool
@@ -996,53 +952,8 @@ Test1:
 	mov 	r3,#4
 	bl 	DrawText
 
-	
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-@
-@ XXX TODO - PORT THIS TO DREAMCAST
-@
-@ apparently we don't have the umlals instruction
-@
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-	mov 	r1,#0
-	ldr 	r2,=0x80000000
-	mov 	r3,#8
-	mov 	r5,#1
-	mov 	r4,#2
-	@@ umlals 	r4,r5,r2,r3 @ XXX RIGHT HERE
-	orrmi 	r1,r1,#2
-	orreq 	r1,r1,#8
-	cmp 	r4,#2
-	orrne 	r1,r1,#BAD_Rd
-	cmp 	r5,#5	
-	orrne 	r1,r1,#BAD_Rd
-	ldr 	r0,=szUMLAL
-	bl 	DrawResult
-	add 	r8,r8,#8
-
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-@
-@ XXX TODO - PORT THIS TO DREAMCAST
-@
-@ apparently we don't have the smlals instruction
-@
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-	@ SMLAL
-	mov 	r1,#0
-	ldr 	r2,=0x80000001
-	mov 	r3,#8
-	mov 	r5,#5
-	ldr 	r4,=0xfffffff8
-	@@ smlals 	r4,r5,r2,r3 @ XXX RIGHT HERE
-	orrmi 	r1,r1,#2
-	orreq 	r1,r1,#8
-	cmp 	r5,#2
-	orrne 	r1,r1,#BAD_Rd
-	cmp 	r4,#0
-	orrne 	r1,r1,#BAD_Rd
-	ldr 	r0,=szSMLAL
-	bl 	DrawResult
-	add 	r8,r8,#8
+	@@ UMLALS and SMLALS were both removed because they don't exist on
+	@@ Dreamcast's ARM
 
 	@ SWP
 	mov 	r1,#0
@@ -1669,103 +1580,9 @@ Test2:
 	bl 	DrawResult
 	add 	r8,r8,#8
 	
-	
-	
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-@
-@ XXX TODO - PORT THIS TO DREAMCAST
-@
-@ apparently we don't have the ldrh instruction
-@ IDK if there's a reasonable replacement or if this test
-@ needs to be scrapped.
-@
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-	@ LDRH
-	
-	@ +#]
-	mov 	r1,#0
-	ldr 	r0,=romvar2
-	sub 	r0,r0,#1
-	sub 	r2,r0,#3
-	mov 	r3,r2
-	@@ ldrh 	r0,[r0,#1] @ XXX RIGHT HERE
-	ldr 	r5,=0x00008f00
-	cmp 	r0,r5
-	orrne 	r1,r1,#BAD_Rd
-	@@ ldrh 	r0,[r2,#4] @ XXX RIGHT HERE
-	cmp 	r0,r5
-	orrne 	r1,r1,#BAD_Rd
-	cmp 	r2,r3
-	orrne 	r1,r1,#BAD_Rn
-	mov 	r2,#0
-	orr 	r1,r1,#0x80000000
-	ldr 	r0,=szLDRH
-	bl 	DrawResult
-	add 	r8,r8,#8
+	@@ XXX Four different LDRH testcases were removed because we don't have
+	@@ that on Dreamcast's ARM
 
-	@ -#]
-	mov 	r1,#0
-	ldr 	r0,=romvar2
-	add 	r0,r0,#1
-	add 	r2,r0,#3
-	mov 	r3,r2
-	@@ ldrh 	r0,[r0,#-1] @ XXX RIGHT HERE
-	ldr 	r5,=0x00008f00
-	cmp 	r0,r5
-	orrne 	r1,r1,#BAD_Rd
-	@@ ldrh 	r0,[r2,#-4] @ XXX RIGHT HERE
-	cmp 	r0,r5
-	orrne 	r1,r1,#BAD_Rd
-	cmp 	r2,r3
-	orrne 	r1,r1,#BAD_Rn
-	mov 	r2,#1
-	orr 	r1,r1,#0x80000000
-	ldr 	r0,=szLDRH
-	bl 	DrawResult
-	add 	r8,r8,#8
-
-	@ +#]!
-	mov 	r1,#0
-	ldr 	r0,=romvar2
-	mov 	r3,r0
-	sub 	r0,r0,#1
-	sub 	r2,r0,#3
-	@@ ldrh 	r0,[r0,#1]! @ XXX RIGHT HERE
-	ldr 	r5,=0x00008f00
-	cmp 	r0,r5
-	orrne 	r1,r1,#BAD_Rd
-	@@ ldrh 	r0,[r2,#4]! @ XXX RIGHT HERE
-	cmp 	r0,r5
-	orrne 	r1,r1,#BAD_Rd
-	cmp 	r2,r3
-	orrne 	r1,r1,#BAD_Rn
-	mov 	r2,#2
-	orr 	r1,r1,#0x80000000
-	ldr 	r0,=szLDRH
-	bl 	DrawResult
-	add 	r8,r8,#8
-
-	@ -#]!
-	mov 	r1,#0
-	ldr 	r0,=romvar2
-	mov 	r3,r0
-	add 	r0,r0,#1
-	add 	r2,r0,#3
-	@@ ldrh 	r0,[r0,#-1]! @ XXX RIGHT HERE
-	ldr 	r5,=0x00008f00
-	cmp 	r0,r5
-	orrne 	r1,r1,#BAD_Rd
-	@@ ldrh 	r0,[r2,#-4]! @ XXX RIGHT HERE
-	cmp 	r0,r5
-	orrne 	r1,r1,#BAD_Rd
-	cmp 	r2,r3
-	orrne 	r1,r1,#BAD_Rn
-	mov 	r2,#3
-	orr 	r1,r1,#0x80000000
-	ldr 	r0,=szLDRH
-	bl 	DrawResult
-	add 	r8,r8,#8
-	
 	ldmfd 	sp!,{lr}
 	mov 	pc,lr
 .pool
@@ -1782,65 +1599,9 @@ Test3:
 	mov 	r3,#4
 	bl 	DrawText
 
+	@@ XXX Two different LDRH testcases were removed because we don't have
+	@@ that on Dreamcast's ARM
 
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-@
-@ XXX TODO - PORT THIS TO DREAMCAST
-@
-@ apparently we don't have the ldrh instruction
-@ IDK if there's a reasonable replacement or if this test
-@ needs to be scrapped.
-@
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-	@ LDRH
-	
-	@ +#]
-	mov 	r1,#0
-	ldr 	r0,=romvar2
-	sub 	r0,r0,#1
-	sub 	r2,r0,#3
-	mov 	r3,r2
-	mov 	r4,#1
-	@@ ldrh 	r0,[r0,r4] @ XXX RIGHT HERE
-	ldr 	r5,=0x00008f00
-	cmp 	r0,r5
-	orrne 	r1,r1,#BAD_Rd
-	mov 	r4,#4
-	@@ ldrh 	r0,[r2,r4]
-	cmp 	r0,r5
-	orrne 	r1,r1,#BAD_Rd
-	cmp 	r2,r3
-	orrne 	r1,r1,#BAD_Rn
-	mov 	r2,#4
-	orr 	r1,r1,#0x80000000
-	ldr 	r0,=szLDRH
-	bl 	DrawResult
-	add 	r8,r8,#8
-
-	@ -#]
-	mov 	r1,#0
-	ldr 	r0,=romvar2
-	add 	r0,r0,#1
-	add 	r2,r0,#3
-	mov 	r3,r2
-	mov 	r4,#1
-	@@ ldrh 	r0,[r0,-r4] @ XXX RIGHT HERE
-	ldr 	r5,=0x00008f00
-	cmp 	r0,r5
-	orrne 	r1,r1,#BAD_Rd
-	mov 	r4,#4
-	@@ ldrh 	r0,[r2,-r4] @ XXX RIGHT HERE
-	cmp 	r0,r5
-	orrne 	r1,r1,#BAD_Rd
-	cmp 	r2,r3
-	orrne 	r1,r1,#BAD_Rn
-	mov 	r2,#5
-	orr 	r1,r1,#0x80000000
-	ldr 	r0,=szLDRH
-	bl 	DrawResult
-	add 	r8,r8,#8
-	
-	
 	@ LDRB
 	
 	@ +#]
@@ -1921,106 +1682,9 @@ Test3:
 	bl 	DrawResult
 	add 	r8,r8,#8
 	
+	@@ XXX Four different LDRSB testcases were removed because we don't have
+	@@ that on Dreamcast's ARM
 
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-@
-@ XXX TODO - PORT THIS TO DREAMCAST
-@
-@ apparently we don't have the ldrsb instruction
-@ IDK if there's a reasonable replacement or if this test
-@ needs to be scrapped.
-@
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-	@ LDRSB
-	
-	@ +#]
-	mov 	r1,#0
-	ldr 	r0,=romvar3
-	sub 	r2,r0,#3
-	mov 	r3,r2
-	@@ ldrsb 	r0,[r0,#0] @ XXX RIGHT HERE
-	ldr 	r5,=0xffffff80
-	cmp 	r0,r5
-	orrne 	r1,r1,#BAD_Rd
-	@@ ldrsb 	r0,[r2,#4] @ XXX RIGHT HERE
-	cmp 	r0,#0x7f
-	orrne 	r1,r1,#BAD_Rd
-	cmp 	r2,r3
-	orrne 	r1,r1,#BAD_Rn
-	mov 	r2,#0
-	orr 	r1,r1,#0x80000000
-	ldr 	r0,=szLDRSB
-	bl 	DrawResult
-	add 	r8,r8,#8
-
-
-	@ -#]
-	mov 	r1,#0
-	ldr 	r0,=romvar3
-	add 	r2,r0,#3
-	add 	r0,r0,#1
-	mov 	r3,r2
-	@@ ldrsb 	r0,[r0,#-1] @ XXX RIGHT HERE
-	ldr 	r5,=0xffffff80
-	cmp 	r0,r5
-	orrne 	r1,r1,#BAD_Rd
-	@@ ldrsb 	r0,[r2,#-2] @ XXX RIGHT HERE
-	cmp 	r0,#0x7f
-	orrne 	r1,r1,#BAD_Rd
-	cmp 	r2,r3
-	orrne 	r1,r1,#BAD_Rn
-	mov 	r2,#1
-	orr 	r1,r1,#0x80000000
-	ldr 	r0,=szLDRSB
-	bl 	DrawResult
-	add 	r8,r8,#8
-
-	@ +R]
-	mov 	r1,#0
-	ldr 	r0,=romvar3
-	sub 	r2,r0,#3
-	mov 	r3,r2
-	mov 	r4,#4
-	@@ ldrsb 	r0,[r0,r9] @ XXX RIGHT HERE
-	ldr 	r5,=0xffffff80
-	cmp 	r0,r5
-	orrne 	r1,r1,#BAD_Rd
-	@@ ldrsb 	r0,[r2,r4] @ XXX RIGHT HERE
-	cmp 	r0,#0x7f
-	orrne 	r1,r1,#BAD_Rd
-	cmp 	r2,r3
-	orrne 	r1,r1,#BAD_Rn
-	mov 	r2,#4
-	orr 	r1,r1,#0x80000000
-	ldr 	r0,=szLDRSB
-	bl 	DrawResult
-	add 	r8,r8,#8
-
-
-	@ -R]
-	mov 	r1,#0
-	ldr 	r0,=romvar3
-	add 	r2,r0,#3
-	add 	r0,r0,#1
-	mov 	r3,r2
-	mov 	r4,#1
-	@@ ldrsb 	r0,[r0,-r4] @ XXX RIGHT HERE
-	ldr 	r5,=0xffffff80
-	cmp 	r0,r5
-	orrne 	r1,r1,#BAD_Rd
-	add 	r4,r4,r4
-	@@ ldrsb 	r0,[r2,-r4] @ XXX RIGHT HERE
-	cmp 	r0,#0x7f
-	orrne 	r1,r1,#BAD_Rd
-	cmp 	r2,r3
-	orrne 	r1,r1,#BAD_Rn
-	mov 	r2,#5
-	orr 	r1,r1,#0x80000000
-	ldr 	r0,=szLDRSB
-	bl 	DrawResult
-	add 	r8,r8,#8
-	
-	
 	ldmfd 	sp!,{lr}
 	mov 	pc,lr
 .pool
