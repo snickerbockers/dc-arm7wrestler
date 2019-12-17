@@ -619,14 +619,19 @@ Menu:
 	mov 	r2,#32
 	mov 	r3,#4
 	bl 	DrawText
-	ldr 	r0,=szAster2
+	ldr 	r0,=szPortAuthor
 	mov 	r1,#0
 	mov 	r2,#40
 	mov 	r3,#4
 	bl 	DrawText
-	ldr 	r0,=szAsterixes
+	ldr 	r0,=szAster2
 	mov 	r1,#0
 	mov 	r2,#48
+	mov 	r3,#4
+	bl 	DrawText
+	ldr 	r0,=szAsterixes
+	mov 	r1,#0
+	mov 	r2,#56
 	mov 	r3,#4
 	bl 	DrawText
 
@@ -2366,6 +2371,7 @@ szAsterixes:	.asciz "jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj"
 szAster2:	.asciz "j                              j"
 szArmwrestler:	.asciz "j        ARM7WRESTLER DC       j"
 szAuthor:	.asciz "j          Micg 2006           j"
+szPortAuthor:	.asciz "j     snickerbockersg 2019     j"
 
 szArm1:		.asciz "ARM ALU"
 szArm2:		.asciz "ARM LDR/STR"
