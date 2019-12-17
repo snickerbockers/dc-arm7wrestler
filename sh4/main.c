@@ -578,8 +578,53 @@ int dcmain(int argc, char **argv) {
 
                     inp = arm_msg;
                     while (*inp && x_pos < N_CHAR_COLS) {
+                        char ch = *inp++;
+
+                        /*
+                         * character substitution - the original DS version of
+                         * this test uses a custom font which is not compatible
+                         * with ASCII, so certain characters have to be
+                         * translated.  Most characters don't need this afaik,
+                         * just some of them.
+                         *
+                         * TODO: this list may be incomplete, I only updated
+                         * the ones that I can currently see due to
+                         * WashingtonDC failing certain testcases.  If there are
+                         * any other characters which I can't see right now, then I
+                         * probably didn't translate them.
+                         */
+                        switch (ch) {
+                        case '&':
+                            ch = '+';
+                            break;
+                        case '\'':
+                            ch = '-';
+                            break;
+                        case ')':
+                            ch = '!';
+                            break;
+                        case '\\':
+                            ch = '#';
+                            break;
+                        case '^':
+                            ch = 'd';
+                            break;
+                        case '_':
+                            ch = 'n';
+                            break;
+                        case 'g':
+                            ch = ',';
+                            break;
+                        case 'j':
+                            ch = '*';
+                            break;
+                        case '`': // TODO: see if theres an arrow we can use...
+                            ch = '>';
+                            break;
+                        }
+
                         txt_colors[y_pos][x_pos] = color;
-                        txt_buf[y_pos][x_pos++] = *inp++;
+                        txt_buf[y_pos][x_pos++] = ch;
                     }
                     return_msg(0);
                     break;
