@@ -2364,7 +2364,7 @@ szMem:		.asciz "MEM"
 
 szAsterixes:	.asciz "jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj"
 szAster2:	.asciz "j                              j"
-szArmwrestler:	.asciz "j        ARM7WRESTLER DS       j"
+szArmwrestler:	.asciz "j        ARM7WRESTLER DC       j"
 szAuthor:	.asciz "j          Micg 2006           j"
 
 szArm1:		.asciz "ARM ALU"
@@ -2395,11 +2395,11 @@ szAV5:		.asciz  "ARM V5TE TESTS"
 .global szStart
 .global szMenu
 
-szPressStart: 	.asciz "PRESS START"
-szSelect2:	.asciz "SELECT:"
+szPressStart: 	.asciz "PRESS A"
+szSelect2:	.asciz "B:"
 szNext:		.asciz "Nextg"
-szStart:	.asciz "START:"
-szStart2:	.asciz "START"
+szStart:	.asciz "A:"
+szStart2:	.asciz "A"
 szMenu:		.asciz "Menu"
 szSpace:	.asciz " "
 
