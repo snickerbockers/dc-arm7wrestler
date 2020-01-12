@@ -6,7 +6,9 @@ port is based on Arisotura's fork at
 https://github.com/arisotura/arm7wrestler , so it also includes the improvements
 they made to the original DS version.
 
-Please direct all criticism to snickerbockers@washemu.org .
+Please direct all criticism to snickerbockers@washemu.org .  The source code
+for this test may be found on github at
+https://github.com/snickerbockers/dc-arm7wrestler .
 
 Since the Dreamcast's ARM7 is only able to access the audio hardware directly,
 this test implements a simple packet communication system to allow the ARM7 to
@@ -30,7 +32,7 @@ ARMv4/v5 and thumb opcodes which aren't available on the Dreamcast's ARM7DI.
   two CPUs serialises them so that the ARM7 can't do anything while it's waiting
   for the SH4 to respond.  Some emulators will run each CPU one at a time and
   alternate between them every N cycles; this introduces a latency into the
-  communication system since it takes 2*N cycles for a round-trip message
+  communication system since it takes up to 2*N cycles for a round-trip message
   between CPUs and that latency can cause it to take more than one frame to
   update the screen.  This is not a problem on real hardware because the two
   CPUs can actually execute concurrently.  This bug will not impact your test
